@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "BoothBooking": {
+      "title": "Booth Booking",
+      "description": "Information about a company booking a booth at the expo.",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string", "description": "The name of the company." },
+        "contactName": { "type": "string", "description": "The name of the contact person." },
+        "phone": { "type": "string", "description": "The phone number of the contact person." },
+        "boothId": { "type": "string", "description": "The ID of the booth being booked." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the booking was created." }
+      },
+      "required": ["companyName", "contactName", "phone", "boothId", "createdAt"]
+    },
+    "VisitorRegistration": {
+      "title": "Visitor Registration",
+      "description": "Information about a visitor registering for the expo.",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string", "description": "The first name of the visitor." },
+        "lastName": { "type": "string", "description": "The last name of the visitor." },
+        "phone": { "type": "string", "description": "The phone number of the visitor." },
+        "email": { "type": "string", "format": "email", "description": "The email address of the visitor." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the registration was created." }
+      },
+      "required": ["firstName", "lastName", "phone", "email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/booth_bookings/{bookingId}": {
+      "schema": "BoothBooking",
+      "description": "Collection of booth booking registrations."
+    },
+    "/visitor_registrations/{registrationId}": {
+      "schema": "VisitorRegistration",
+      "description": "Collection of visitor registrations."
+    }
+  }
+}

@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Booth Booking Validation
+    function isValidBoothBooking(data) {
+      return data.keys().hasAll(['companyName', 'contactName', 'phone', 'boothId', 'createdAt'])
+        && data.keys().size() == 5
+        && data.companyName is string && data.companyName.size() > 0 && data.companyName.size() <= 200
+        && data.contactName is string && data.contactName.size() > 0 && data.contactName.size() <= 100
+        && data.phone is string && data.phone.size() >= 8 && data.phone.size() <= 20
+        && data.boothId is string && data.boothId.size() > 0 && data.boothId.size() <= 10
+        && data.createdAt == request.time;
+    }
+
+    // Visitor Registration Validation
+    function isValidVisitorRegistration(data) {
+      return data.keys().hasAll(['firstName', 'lastName', 'phone', 'email', 'createdAt'])
+        && data.keys().size() == 5
+        && data.firstName is string && data.firstName.size() > 0 && data.firstName.size() <= 50
+        && data.lastName is string && data.lastName.size() > 0 && data.lastName.size() <= 50
+        && data.phone is string && data.phone.size() >= 8 && data.phone.size() <= 20
+        && data.email is string && data.email.size() > 0 && data.email.size() <= 100 && data.email.matches('.+@.+\\..+')
+        && data.createdAt == request.time;
+    }
+
+    // Collection: Booth Bookings
+    match /booth_bookings/{bookingId} {
+      // Allow public creation
+      allow create: if isValidId(bookingId) && isValidBoothBooking(incoming());
+      // Admin only can read all (assuming admin role if implemented later, or just deny for now)
+      // allow read: if false; 
+    }
+
+    // Collection: Visitor Registrations
+    match /visitor_registrations/{registrationId} {
+      // Allow public creation
+      allow create: if isValidId(registrationId) && isValidVisitorRegistration(incoming());
+      // allow read: if false;
+    }
+  }
+}

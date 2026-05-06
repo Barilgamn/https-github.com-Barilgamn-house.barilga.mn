@@ -7,6 +7,8 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Check, Info, Phone, Calendar, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun } from 'lucide-react';
 import { translations, Lang } from './i18n';
+import { db, auth, handleFirestoreError, OperationType } from './firebase';
+import { collection, addDoc, serverTimestamp, doc, getDocFromServer } from 'firebase/firestore';
 
 export default function App() {
   const [lang, setLang] = useState<Lang>('mn');
@@ -18,12 +20,28 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const lastScrollY = useRef(0);
   const bookingRef = useRef<HTMLElement>(null);
   const companiesRef = useRef<HTMLDivElement>(null);
 
   const [companiesPage, setCompaniesPage] = useState(1);
   const itemsPerPage = 8;
+
+  // Connection Test
+  React.useEffect(() => {
+    async function testConnection() {
+      try {
+        await getDocFromServer(doc(db, 'test', 'connection'));
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('the client is offline')) {
+          console.error("Please check your Firebase configuration.");
+        }
+      }
+    }
+    testConnection();
+  }, []);
 
 
   // Countdown State
@@ -144,10 +162,28 @@ export default function App() {
     );
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Таны талбай захиалах хүсэлтийг амжилттай хүлээж авлаа. Бид удахгүй холбогдох болно.');
-    setIsModalOpen(false);
+    setIsSubmitting(true);
+    const formData = new FormData(e.target as HTMLFormElement);
+    const data = {
+      companyName: formData.get('companyName') as string,
+      contactName: formData.get('contactName') as string,
+      phone: formData.get('phone') as string,
+      boothId: selectedBooth,
+      createdAt: serverTimestamp(),
+    };
+
+    const path = 'booth_bookings';
+    try {
+      await addDoc(collection(db, path), data);
+      alert('Таны талбай захиалах хүсэлтийг амжилттай хүлээж авлаа. Бид удахгүй холбогдох болно.');
+      setIsModalOpen(false);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, path);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -590,15 +626,15 @@ export default function App() {
             <form onSubmit={handleFormSubmit} className="space-y-6 relative z-10">
                <div className="space-y-2">
                  <label className="text-sm font-medium text-slate-300">Компанийн нэр</label>
-                 <input required type="text" placeholder="Таны компани ХХК" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
+                 <input required name="companyName" type="text" placeholder="Таны компани ХХК" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
                </div>
                <div className="space-y-2">
                  <label className="text-sm font-medium text-slate-300">Холбогдох хүний нэр</label>
-                 <input required type="text" placeholder="Бат, Болд..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
+                 <input required name="contactName" type="text" placeholder="Бат, Болд..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
                </div>
                <div className="space-y-2">
                  <label className="text-sm font-medium text-slate-300">Утасны дугаар</label>
-                 <input required type="tel" placeholder="9911..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
+                 <input required name="phone" type="tel" placeholder="9911..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
                </div>
 
                <div className="space-y-2 pb-4">
@@ -610,8 +646,8 @@ export default function App() {
                  </div>
                </div>
 
-               <button type="submit" className="w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center transition-all bg-amber-400 hover:bg-amber-500 text-slate-900 focus:ring-4 focus:ring-amber-400/30 active:scale-[0.98] shadow-lg shadow-amber-400/20">
-                 Талбай захиалах хүсэлт илгээх
+               <button type="submit" disabled={isSubmitting} className="w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center transition-all bg-amber-400 hover:bg-amber-500 text-slate-900 focus:ring-4 focus:ring-amber-400/30 active:scale-[0.98] shadow-lg shadow-amber-400/20 disabled:opacity-50">
+                 {isSubmitting ? 'Илгээж байна...' : 'Талбай захиалах хүсэлт илгээх'}
                </button>
             </form>
           </div>
@@ -628,32 +664,50 @@ export default function App() {
             </button>
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl z-0 pointer-events-none"></div>
             <h3 className="text-2xl font-bold mb-8 relative z-10 w-11/12">Үзэгчийн бүртгэл</h3>
-            <form onSubmit={(e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault();
-              alert('Таны үзэгчийн бүртгэлийг амжилттай хүлээж авлаа. Үзэсгэлэнд тавтай морилно уу!');
-              setIsVisitorModalOpen(false);
+              setIsSubmitting(true);
+              const formData = new FormData(e.target as HTMLFormElement);
+              const data = {
+                firstName: formData.get('firstName') as string,
+                lastName: formData.get('lastName') as string,
+                phone: formData.get('phone') as string,
+                email: formData.get('email') as string,
+                createdAt: serverTimestamp(),
+              };
+
+              const path = 'visitor_registrations';
+              try {
+                await addDoc(collection(db, path), data);
+                alert('Таны үзэгчийн бүртгэлийг амжилттай хүлээж авлаа. Үзэсгэлэнд тавтай морилно уу!');
+                setIsVisitorModalOpen(false);
+              } catch (error) {
+                handleFirestoreError(error, OperationType.CREATE, path);
+              } finally {
+                setIsSubmitting(false);
+              }
             }} className="space-y-6 relative z-10">
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                  <div className="space-y-2">
                    <label className="text-sm font-medium text-slate-300">Овог</label>
-                   <input required type="text" placeholder="Овог" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+                   <input required name="lastName" type="text" placeholder="Овог" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                  </div>
                  <div className="space-y-2">
                    <label className="text-sm font-medium text-slate-300">Нэр</label>
-                   <input required type="text" placeholder="Нэр" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+                   <input required name="firstName" type="text" placeholder="Нэр" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                  </div>
                </div>
                <div className="space-y-2">
                  <label className="text-sm font-medium text-slate-300">Утасны дугаар</label>
-                 <input required type="tel" placeholder="9911..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+                 <input required name="phone" type="tel" placeholder="9911..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                </div>
                <div className="space-y-2 pb-4">
                  <label className="text-sm font-medium text-slate-300">И-мэйл хаяг</label>
-                 <input required type="email" placeholder="example@gmail.com" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+                 <input required name="email" type="email" placeholder="example@gmail.com" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                </div>
 
-               <button type="submit" className="w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center transition-all bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-4 focus:ring-emerald-500/30 active:scale-[0.98] shadow-lg shadow-emerald-500/20">
-                 Бүртгүүлэх
+               <button type="submit" disabled={isSubmitting} className="w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center transition-all bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-4 focus:ring-emerald-500/30 active:scale-[0.98] shadow-lg shadow-emerald-500/20 disabled:opacity-50">
+                 {isSubmitting ? 'Бүртгэж байна...' : 'Бүртгүүлэх'}
                </button>
             </form>
           </div>
