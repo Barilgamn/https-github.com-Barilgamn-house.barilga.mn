@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" fill="none">
+    <style>
+        .filled-text {
+            font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+            font-size: 64px;
+            font-weight: 900;
+            fill: #ffffff;
+            letter-spacing: -1px;
+        }
+        .filled-text-large {
+            font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+            font-size: 88px;
+            font-weight: 900;
+            fill: #ffffff;
+            letter-spacing: -2px;
+        }
+    </style>
+
+    <!-- House Outline -->
+    <path d="M 50 180 L 50 100 L 20 100 L 190 20 L 310 54" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M 50 180 L 300 180" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" />
+
+    <!-- Text -->
+    <text x="85" y="100" class="filled-text">АМИНЫ ОРОН</text>
+    <text x="80" y="180" class="filled-text-large" style="font-size: 85px;">СУУЦ</text>
+    <text x="340" y="180" class="filled-text-large">2026</text>
+
+    <!-- Leaves (Top Left) -->
+    <g transform="translate(35, 3) scale(1.1)">
+        <!-- Left Leaf -->
+        <path d="M80 45 C50 10 0 0 -10 5 C-10 40 5 70 45 70 C75 70 90 55 80 45 Z" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Branch/vein for left leaf (cutout effect) -->
+        <path d="M-10 5 C15 25 30 50 45 70" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none"/>
+        
+        <!-- Right Leaf -->
+        <path d="M85 47 C95 25 120 12 135 7 C140 30 125 50 100 55 C90 58 85 55 85 47 Z" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Branch/vein for right leaf (cutout effect) -->
+        <path d="M135 7 C120 25 105 40 100 55" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </g>
+</svg>
