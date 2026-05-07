@@ -259,23 +259,23 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <nav className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <nav className="bg-slate-900/80 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-lg shadow-black/5">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2">
              <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="ХАУС & БАРИЛГА ЭКСПО" className="h-10 sm:h-12 w-auto" />
           </Link>
-          <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full uppercase tracking-widest hidden sm:block">Admin</span>
+          <span className="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-full uppercase tracking-widest hidden sm:block">Admin</span>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+          <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-300">
+            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-emerald-400">
               {user.email?.charAt(0).toUpperCase()}
             </div>
             {user.email}
           </div>
           <button 
             onClick={handleLogout}
-            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
             title="Гарах"
           >
             <LogOut className="w-5 h-5" />
