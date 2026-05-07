@@ -829,23 +829,46 @@ export default function App() {
                 { time: "15:30 - 17:30", title: "B2B уулзалтууд", desc: "Худалдан авагч болон ханган нийлүүлэгчдийн ганцаарчилсан уулзалтууд", id: "6" },
                 { time: "18:00", title: "Тухайн өдрийн хаалт", desc: "", id: "7" },
               ]).map((item: any, idx) => (
-                <div key={item.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-4">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-100 group-hover:bg-emerald-500 group-hover:scale-110 text-slate-500 group-hover:text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm transition-all duration-300 z-10 font-bold ml-[4.3rem] sm:ml-[7.3rem] md:ml-0">
+                <div key={item.id} className="relative flex flex-col md:flex-row items-center justify-between md:justify-center group is-active py-4">
+                  
+                  {/* Mobile Dot */}
+                  <div className="md:hidden absolute left-[4.3rem] sm:left-[7.3rem] top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-100 group-hover:bg-emerald-500 group-hover:scale-110 text-slate-500 group-hover:text-white shrink-0 shadow-sm transition-all duration-300 z-10">
                     <div className="w-2.5 h-2.5 rounded-full bg-current"></div>
                   </div>
-                  
-                  <div className="w-[calc(100%-8rem)] sm:w-[calc(100%-11rem)] md:w-[calc(50%-2.5rem)] pb-4 md:pb-0">
-                    <div className={`p-6 rounded-[2rem] bg-white border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all ${idx % 2 === 0 ? 'md:text-right md:mr-4' : 'md:text-left md:ml-4'}`}>
-                      <div className="flex flex-col gap-1 mb-2">
-                        <span className={`font-space font-bold text-sm tracking-widest uppercase text-emerald-500 mb-1`}>{item.time} {item.date ? `(${item.date})` : ''}</span>
-                        <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
-                      </div>
-                      {(item.description || item.desc) && <p className="text-slate-600 leading-relaxed">{item.description || item.desc}</p>}
-                    </div>
+
+                  {/* Desktop Dot */}
+                  <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-100 group-hover:bg-emerald-500 group-hover:scale-110 text-slate-500 group-hover:text-white shrink-0 shadow-sm transition-all duration-300 z-10">
+                    <div className="w-2.5 h-2.5 rounded-full bg-current"></div>
                   </div>
-                  
-                  {/* Empty spacer for the other side on desktop */}
-                  <div className="hidden md:block w-[calc(50%-2.5rem)]"></div>
+
+                  {idx % 2 === 0 ? (
+                    <>
+                      <div className="w-full pl-[9rem] pr-4 sm:pl-[12rem] md:px-0 md:w-[calc(50%-3rem)] pb-4 md:pb-0 z-0">
+                        <div className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all md:text-right">
+                          <div className="flex flex-col gap-1 mb-2">
+                            <span className="font-space font-bold text-sm tracking-widest uppercase text-emerald-500 mb-1">{item.time} {item.date ? `(${item.date})` : ''}</span>
+                            <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
+                          </div>
+                          {(item.description || item.desc) && <p className="text-slate-600 leading-relaxed">{item.description || item.desc}</p>}
+                        </div>
+                      </div>
+                      <div className="hidden md:block md:w-[calc(50%-3rem)]"></div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="hidden md:block md:w-[calc(50%-3rem)]"></div>
+                      <div className="w-full pl-[9rem] pr-4 sm:pl-[12rem] md:px-0 md:w-[calc(50%-3rem)] pb-4 md:pb-0 z-0">
+                        <div className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all md:text-left">
+                          <div className="flex flex-col gap-1 mb-2">
+                            <span className="font-space font-bold text-sm tracking-widest uppercase text-emerald-500 mb-1">{item.time} {item.date ? `(${item.date})` : ''}</span>
+                            <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
+                          </div>
+                          {(item.description || item.desc) && <p className="text-slate-600 leading-relaxed">{item.description || item.desc}</p>}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                 </div>
               ))}
             </div>
