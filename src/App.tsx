@@ -5,10 +5,25 @@
 
 import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Check, Info, Phone, Calendar, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun } from 'lucide-react';
+import { Check, Info, Phone, Calendar, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun, Facebook, Twitter } from 'lucide-react';
 import { translations, Lang } from './i18n';
 import { db, auth, handleFirestoreError, OperationType } from './firebase';
-import { collection, addDoc, serverTimestamp, doc, getDocFromServer } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDocFromServer, onSnapshot, query, orderBy } from 'firebase/firestore';
+
+interface Exhibitor {
+  id: string;
+  name: string;
+  activity: string;
+  booth: string;
+}
+
+interface Schedule {
+  id: string;
+  date: string;
+  time: string;
+  title: string;
+  description: string;
+}
 
 export default function App() {
   const [lang, setLang] = useState<Lang>('mn');
@@ -21,6 +36,8 @@ export default function App() {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
 
   const lastScrollY = useRef(0);
   const bookingRef = useRef<HTMLElement>(null);
@@ -28,6 +45,33 @@ export default function App() {
 
   const [companiesPage, setCompaniesPage] = useState(1);
   const itemsPerPage = 8;
+
+  // Fetch exhibitors & schedules
+  React.useEffect(() => {
+    const qExh = query(collection(db, 'exhibitors'), orderBy('createdAt', 'desc'));
+    const unsubscribeExh = onSnapshot(qExh, (snapshot) => {
+      const data: Exhibitor[] = [];
+      snapshot.forEach(doc => {
+        data.push({ id: doc.id, ...doc.data() } as Exhibitor);
+      });
+      setExhibitors(data);
+    }, (error) => {
+      console.error("Failed to load exhibitors:", error);
+    });
+
+    const qSch = query(collection(db, 'schedules'), orderBy('createdAt', 'asc'));
+    const unsubscribeSch = onSnapshot(qSch, (snapshot) => {
+      const data: Schedule[] = [];
+      snapshot.forEach(doc => {
+        data.push({ id: doc.id, ...doc.data() } as Schedule);
+      });
+      setSchedules(data);
+    }, (error) => {
+      console.error("Failed to load schedules:", error);
+    });
+
+    return () => { unsubscribeExh(); unsubscribeSch(); };
+  }, []);
 
   // Connection Test & Page View Tracking
   React.useEffect(() => {
@@ -109,7 +153,32 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const bookedBooths = ['A15', 'A16', 'A17', 'A20', 'A29', 'A30', 'A31', 'A33', 'A34', 'A35', 'A36', 'A37', 'A41', 'A59', 'A69', 'A71', 'A73', 'A75', 'A81', 'ЗАДГАЙ 1', 'ЗАДГАЙ 2', 'ЗАДГАЙ 3'];
+  const hardcodedExhibitors = [
+    { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
+    { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
+    { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
+    { name: "Централ Рич Монголиа ХХК", activity: "Барилгын материал", booth: "A20" },
+    { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
+    { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
+    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын тоног төхөөрөмж", booth: "A31, A71" },
+    { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц, хаус барилга", booth: "A33" },
+    { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
+    { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
+    { name: "АГЛУТ ХХК", activity: "Инжинер, төсөл", booth: "A36" },
+    { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
+    { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД ХХК", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
+    { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
+    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69, A81" },
+    { name: "ЭС ЭН ДИ ХХК", activity: "Барилга угсралт", booth: "A73" },
+    { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Цахилгаан, гэрэлтүүлэг", booth: "A75" },
+    { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "ЗАДГАЙ 1" },
+    { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "ЗАДГАЙ 2" },
+    { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
+  ];
+
+  const allExhibitors = [...hardcodedExhibitors, ...exhibitors];
+  const bookedBooths = allExhibitors.map(e => e.booth.split(',').map(b => b.trim())).flat();
+  
   const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
 
   const scrollToBooking = () => {
@@ -483,8 +552,8 @@ export default function App() {
           </div>
 
           {/* Interactive Floor Plan */}
-          <div className="bg-slate-50 p-4 sm:p-8 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col items-center w-full overflow-x-auto relative min-h-[500px]">
-            <div className="min-w-[900px] w-full flex flex-col items-center py-8">
+          <div className="bg-slate-50 p-4 sm:p-8 rounded-[2rem] border border-slate-200 shadow-sm w-full overflow-x-auto relative min-h-[500px]">
+            <div className="min-w-[900px] lg:w-max lg:mx-auto flex flex-col items-center py-8">
               
               {/* STAGE & Top Row */}
               <div className="flex gap-12 justify-center items-end mb-12 relative w-full px-12">
@@ -580,28 +649,7 @@ export default function App() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[
-              { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
-              { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
-              { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
-              { name: "Централ Рич Монголиа ХХК", activity: "Барилгын материал", booth: "A20" },
-              { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
-              { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
-              { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын тоног төхөөрөмж", booth: "A31, A71" },
-              { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц, хаус барилга", booth: "A33" },
-              { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
-              { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
-              { name: "АГЛУТ ХХК", activity: "Инжинер, төсөл", booth: "A36" },
-              { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
-              { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД ХХК", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
-              { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
-              { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69, A81" },
-              { name: "ЭС ЭН ДИ ХХК", activity: "Барилга угсралт", booth: "A73" },
-              { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Цахилгаан, гэрэлтүүлэг", booth: "A75" },
-              { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "ЗАДГАЙ 1" },
-              { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "ЗАДГАЙ 2" },
-              { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
-            ].map((company, idx) => (
+            {allExhibitors.map((company, idx) => (
               <div key={idx} className="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col items-center justify-center text-center gap-2 group h-full">
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg mb-1">{company.name}</h4>
@@ -772,16 +820,16 @@ export default function App() {
           
           <div className="max-w-3xl mx-auto">
             <div className="space-y-0 relative before:absolute before:inset-0 before:ml-[5.5rem] sm:before:ml-[8.5rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-              {[
-                { time: "09:00 - 10:00", title: "Бүртгэл болон хүлээн авалт", desc: "Үзэсгэлэнд оролцогчдын бүртгэл болон мандат олгох", colorText: "text-emerald-500" },
-                { time: "10:00 - 11:30", title: "Нээлтийн үйл ажиллагаа", desc: "Зохион байгуулагч болон албаны хүмүүсийн нээлтийн үг", colorText: "text-amber-500" },
-                { time: "11:30 - 12:30", title: "Үзэсгэлэнтэй танилцах", desc: "Асар болон бүтээгдэхүүн, үйлчилгээтэй танилцах", colorText: "text-emerald-500" },
-                { time: "12:30 - 13:30", title: "Цайны цаг", desc: "Оролцогчид болон зочдод зориулсан хөнгөн зууш, нетворгинг", colorText: "text-slate-500" },
-                { time: "13:30 - 15:30", title: "Салбар хуралдаан", desc: "Амины орон сууц, ногоон барилгын чиг хандлага сэдэвт хэлэлцүүлэг", colorText: "text-emerald-500" },
-                { time: "15:30 - 17:30", title: "B2B уулзалтууд", desc: "Худалдан авагч болон ханган нийлүүлэгчдийн ганцаарчилсан уулзалтууд", colorText: "text-emerald-500" },
-                { time: "18:00", title: "Тухайн өдрийн хаалт", desc: "", colorText: "text-slate-500" },
-              ].map((item, idx) => (
-                <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-4">
+              {(schedules.length > 0 ? schedules : [
+                { time: "09:00 - 10:00", title: "Бүртгэл болон хүлээн авалт", desc: "Үзэсгэлэнд оролцогчдын бүртгэл болон мандат олгох", id: "1" },
+                { time: "10:00 - 11:30", title: "Нээлтийн үйл ажиллагаа", desc: "Зохион байгуулагч болон албаны хүмүүсийн нээлтийн үг", id: "2" },
+                { time: "11:30 - 12:30", title: "Үзэсгэлэнтэй танилцах", desc: "Асар болон бүтээгдэхүүн, үйлчилгээтэй танилцах", id: "3" },
+                { time: "12:30 - 13:30", title: "Цайны цаг", desc: "Оролцогчид болон зочдод зориулсан хөнгөн зууш, нетворгинг", id: "4" },
+                { time: "13:30 - 15:30", title: "Салбар хуралдаан", desc: "Амины орон сууц, ногоон барилгын чиг хандлага сэдэвт хэлэлцүүлэг", id: "5" },
+                { time: "15:30 - 17:30", title: "B2B уулзалтууд", desc: "Худалдан авагч болон ханган нийлүүлэгчдийн ганцаарчилсан уулзалтууд", id: "6" },
+                { time: "18:00", title: "Тухайн өдрийн хаалт", desc: "", id: "7" },
+              ]).map((item: any, idx) => (
+                <div key={item.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-4">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-100 group-hover:bg-emerald-500 group-hover:scale-110 text-slate-500 group-hover:text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm transition-all duration-300 z-10 font-bold ml-[4.3rem] sm:ml-[7.3rem] md:ml-0">
                     <div className="w-2.5 h-2.5 rounded-full bg-current"></div>
                   </div>
@@ -789,10 +837,10 @@ export default function App() {
                   <div className="w-[calc(100%-8rem)] sm:w-[calc(100%-11rem)] md:w-[calc(50%-2.5rem)] pb-4 md:pb-0">
                     <div className={`p-6 rounded-[2rem] bg-white border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all ${idx % 2 === 0 ? 'md:text-right md:mr-4' : 'md:text-left md:ml-4'}`}>
                       <div className="flex flex-col gap-1 mb-2">
-                        <span className={`font-space font-bold text-sm tracking-widest uppercase ${item.colorText} mb-1`}>{item.time}</span>
+                        <span className={`font-space font-bold text-sm tracking-widest uppercase text-emerald-500 mb-1`}>{item.time} {item.date ? `(${item.date})` : ''}</span>
                         <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
                       </div>
-                      {item.desc && <p className="text-slate-600 leading-relaxed">{item.desc}</p>}
+                      {(item.description || item.desc) && <p className="text-slate-600 leading-relaxed">{item.description || item.desc}</p>}
                     </div>
                   </div>
                   
@@ -851,8 +899,20 @@ export default function App() {
 
       {/* Footer */}
       <footer className="bg-slate-950 pt-8 pb-10 px-4 sm:px-6 lg:px-8 text-slate-400 border-t border-slate-900 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
-        <div className="max-w-7xl mx-auto text-sm text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500">
-          <p>&copy; {new Date().getFullYear()} {d.footer}</p>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-sm text-slate-500 text-center md:text-left">
+            <p>&copy; {new Date().getFullYear()} {d.footer}</p>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <a href="https://www.facebook.com/barilgamn" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-slate-800 transition-colors border border-slate-800 hover:border-blue-500/30">
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a href="https://x.com/Barilga_MN" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors border border-slate-800 hover:border-slate-500/30">
+              <Twitter className="w-5 h-5" />
+            </a>
+          </div>
+
           <p className="font-medium text-xs bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
             Powered by AI Studio
           </p>

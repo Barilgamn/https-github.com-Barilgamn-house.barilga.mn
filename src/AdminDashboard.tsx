@@ -37,14 +37,36 @@ interface PageView {
   createdAt: string | Date;
 }
 
+interface Exhibitor {
+  id: string;
+  name: string;
+  activity: string;
+  booth: string;
+  createdAt: string | Date;
+}
+
+interface Schedule {
+  id: string;
+  date: string;
+  time: string;
+  title: string;
+  description: string;
+  createdAt: string | Date;
+}
+
 export default function AdminDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [boothBookings, setBoothBookings] = useState<BoothBooking[]>([]);
   const [visitorRegistrations, setVisitorRegistrations] = useState<VisitorRegistration[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
-  const [activeTab, setActiveTab] = useState<'booths' | 'visitors' | 'admins' | 'analytics'>('booths');
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [activeTab, setActiveTab] = useState<'booths' | 'exhibitors' | 'visitors' | 'admins' | 'schedules' | 'analytics'>('booths');
   const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [newExhibitor, setNewExhibitor] = useState({ name: '', activity: '', booth: '' });
+  const [newSchedule, setNewSchedule] = useState({ date: '', time: '', title: '', description: '' });
+  const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
   const [loading, setLoading] = useState(true);
   const [authChecking, setAuthChecking] = useState(true);
   const [authError, setAuthError] = useState<string>('');
@@ -120,6 +142,32 @@ export default function AdminDashboard() {
       }
     });
 
+    const exhibitorsQuery = query(collection(db, 'exhibitors'), orderBy('createdAt', 'desc'));
+    const unsubscribeExhibitors = onSnapshot(exhibitorsQuery, (snapshot) => {
+      const data: Exhibitor[] = [];
+      snapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() } as Exhibitor);
+      });
+      setExhibitors(data);
+    }, (error) => {
+      if (!error.message.includes('permission-denied')) {
+        handleFirestoreError(error, OperationType.LIST, 'exhibitors');
+      }
+    });
+
+    const schedulesQuery = query(collection(db, 'schedules'), orderBy('createdAt', 'desc'));
+    const unsubscribeSchedules = onSnapshot(schedulesQuery, (snapshot) => {
+      const data: Schedule[] = [];
+      snapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() } as Schedule);
+      });
+      setSchedules(data);
+    }, (error) => {
+      if (!error.message.includes('permission-denied')) {
+        handleFirestoreError(error, OperationType.LIST, 'schedules');
+      }
+    });
+
     setLoading(false);
 
     return () => {
@@ -127,6 +175,8 @@ export default function AdminDashboard() {
       unsubscribeVisitors();
       unsubscribeAdmins();
       unsubscribePageViews();
+      unsubscribeExhibitors();
+      unsubscribeSchedules();
     };
   }, [user]);
 
@@ -173,6 +223,87 @@ export default function AdminDashboard() {
         handleFirestoreError(error, OperationType.DELETE, `visitor_registrations/${id}`);
       }
     }
+  };
+
+  const handleAddExhibitor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newExhibitor.name || !newExhibitor.activity || !newExhibitor.booth) {
+      alert("Бүх талбарыг бөглөнө үү.");
+      return;
+    }
+    try {
+      const dbRef = collection(db, 'exhibitors');
+      await setDoc(doc(dbRef), {
+         name: newExhibitor.name,
+         activity: newExhibitor.activity,
+         booth: newExhibitor.booth,
+         createdAt: serverTimestamp()
+      });
+      setNewExhibitor({ name: '', activity: '', booth: '' });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
+    }
+  };
+
+  const handleDeleteExhibitor = async (id: string) => {
+    if (window.confirm("Энэ байгууллагын мэдээллийг устгах уу?")) {
+      try {
+        await deleteDoc(doc(db, 'exhibitors', id));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.DELETE, `exhibitors/${id}`);
+      }
+    }
+  };
+
+  const handleSaveSchedule = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSchedule.date || !newSchedule.time || !newSchedule.title) {
+      alert("Огноо, цаг болон гарчгийг оруулна уу.");
+      return;
+    }
+    try {
+      if (editingSchedule) {
+        await updateDoc(doc(db, 'schedules', editingSchedule.id), {
+          date: newSchedule.date,
+          time: newSchedule.time,
+          title: newSchedule.title,
+          description: newSchedule.description
+        });
+        setEditingSchedule(null);
+      } else {
+        const dbRef = collection(db, 'schedules');
+        await setDoc(doc(dbRef), {
+          date: newSchedule.date,
+          time: newSchedule.time,
+          title: newSchedule.title,
+          description: newSchedule.description,
+          createdAt: serverTimestamp()
+        });
+      }
+      setNewSchedule({ date: '', time: '', title: '', description: '' });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'schedules');
+    }
+  };
+
+  const handleDeleteSchedule = async (id: string) => {
+    if (window.confirm("Энэ хөтөлбөрийг устгах уу?")) {
+      try {
+        await deleteDoc(doc(db, 'schedules', id));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.DELETE, `schedules/${id}`);
+      }
+    }
+  };
+
+  const editSchedule = (schedule: Schedule) => {
+    setEditingSchedule(schedule);
+    setNewSchedule({
+      date: schedule.date,
+      time: schedule.time,
+      title: schedule.title,
+      description: schedule.description || ''
+    });
   };
 
   const handleAddAdmin = async (e: React.FormEvent) => {
@@ -326,9 +457,9 @@ export default function AdminDashboard() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
-              <div className="flex border-b border-slate-200 bg-slate-50/50">
+              <div className="flex border-b border-slate-200 bg-slate-50/50 flex-wrap">
                 <button
-                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors ${
+                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === 'booths' 
                       ? 'border-emerald-500 text-emerald-700 bg-emerald-50/50' 
                       : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
@@ -336,10 +467,21 @@ export default function AdminDashboard() {
                   onClick={() => setActiveTab('booths')}
                 >
                   <Building className="w-4 h-4 inline-block mr-2" />
-                  Талбай захиалсан байгууллагууд
+                  Талбай захиалгын хүсэлт
                 </button>
                 <button
-                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors ${
+                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors whitespace-nowrap ${
+                    activeTab === 'exhibitors' 
+                      ? 'border-emerald-500 text-emerald-700 bg-emerald-50/50' 
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                  }`}
+                  onClick={() => setActiveTab('exhibitors')}
+                >
+                  <Building className="w-4 h-4 inline-block mr-2" />
+                  Оролцогч байгууллагууд
+                </button>
+                <button
+                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === 'visitors' 
                       ? 'border-emerald-500 text-emerald-700 bg-emerald-50/50' 
                       : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
@@ -370,6 +512,17 @@ export default function AdminDashboard() {
                 >
                   <Activity className="w-4 h-4 inline-block mr-2" />
                   Хандалт
+                </button>
+                <button
+                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors whitespace-nowrap ${
+                    activeTab === 'schedules' 
+                      ? 'border-emerald-500 text-emerald-700 bg-emerald-50/50' 
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                  }`}
+                  onClick={() => setActiveTab('schedules')}
+                >
+                  <Calendar className="w-4 h-4 inline-block mr-2" />
+                  Хөтөлбөр
                 </button>
               </div>
 
@@ -473,6 +626,87 @@ export default function AdminDashboard() {
                   </table>
                 )}
 
+                {activeTab === 'exhibitors' && (
+                  <div className="p-6">
+                    <form onSubmit={handleAddExhibitor} className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Байгууллагын нэр</label>
+                        <input
+                          type="text"
+                          value={newExhibitor.name}
+                          onChange={(e) => setNewExhibitor({...newExhibitor, name: e.target.value})}
+                          placeholder="Монкабель ХХК"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Үйл ажиллагааны чиглэл</label>
+                        <input
+                          type="text"
+                          value={newExhibitor.activity}
+                          onChange={(e) => setNewExhibitor({...newExhibitor, activity: e.target.value})}
+                          placeholder="Цахилгаан, холбоо"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Талбай (таслалаар зааж болно)</label>
+                        <input
+                          type="text"
+                          value={newExhibitor.booth}
+                          onChange={(e) => setNewExhibitor({...newExhibitor, booth: e.target.value})}
+                          placeholder="A12, A13"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                          required
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <button 
+                          type="submit"
+                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap h-[46px]"
+                        >
+                          Нэмэх
+                        </button>
+                      </div>
+                    </form>
+
+                    <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden border border-slate-100">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                          <th className="p-4 font-semibold">Огноо</th>
+                          <th className="p-4 font-semibold">Компани</th>
+                          <th className="p-4 font-semibold">Үйл ажиллагаа</th>
+                          <th className="p-4 font-semibold text-center bg-emerald-50/30">Талбай</th>
+                          <th className="p-4 font-semibold w-16 text-center">Үйлдэл</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {exhibitors.length === 0 ? (
+                          <tr><td colSpan={5} className="p-8 text-center text-slate-400">Мэдээлэл олдсонгүй</td></tr>
+                        ) : (
+                          exhibitors.map((exhibitor) => (
+                            <tr key={exhibitor.id} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{formatDate(exhibitor.createdAt)}</td>
+                              <td className="p-4 font-medium text-slate-800">{exhibitor.name}</td>
+                              <td className="p-4 text-sm text-slate-600">{exhibitor.activity}</td>
+                              <td className="p-4 font-bold text-center text-emerald-700 bg-emerald-50/10 border-x border-slate-100">{exhibitor.booth}</td>
+                              <td className="p-4 text-center">
+                                <button 
+                                  onClick={() => handleDeleteExhibitor(exhibitor.id)}
+                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
                 {activeTab === 'visitors' && (
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -506,6 +740,118 @@ export default function AdminDashboard() {
                       )}
                     </tbody>
                   </table>
+                )}
+                {activeTab === 'schedules' && (
+                  <div className="p-6">
+                    <form onSubmit={handleSaveSchedule} className="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                      <h4 className="text-sm font-bold text-slate-700 mb-4">{editingSchedule ? 'Хөтөлбөр засах' : 'Шинэ хөтөлбөр нэмэх'}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Огноо</label>
+                          <input
+                            type="text"
+                            value={newSchedule.date}
+                            onChange={(e) => setNewSchedule({...newSchedule, date: e.target.value})}
+                            placeholder="5 сарын 25"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Цаг</label>
+                          <input
+                            type="text"
+                            value={newSchedule.time}
+                            onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})}
+                            placeholder="14:00 - 15:00"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                            required
+                          />
+                        </div>
+                        <div className="lg:col-span-2">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Гарчиг</label>
+                          <input
+                            type="text"
+                            value={newSchedule.title}
+                            onChange={(e) => setNewSchedule({...newSchedule, title: e.target.value})}
+                            placeholder="Нээлтийн үйл ажиллагаа"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                            required
+                          />
+                        </div>
+                        <div className="lg:col-span-4">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Дэлгэрэнгүй (заавал биш)</label>
+                          <textarea
+                            value={newSchedule.description}
+                            onChange={(e) => setNewSchedule({...newSchedule, description: e.target.value})}
+                            placeholder="Илтгэгч болон бусад мэдээлэл"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all resize-y min-h-[60px]"
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-3">
+                        {editingSchedule && (
+                          <button 
+                            type="button"
+                            onClick={() => { setEditingSchedule(null); setNewSchedule({ date: '', time: '', title: '', description: '' }); }}
+                            className="px-4 py-2 font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                          >
+                            Цуцлах
+                          </button>
+                        )}
+                        <button 
+                          type="submit"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+                        >
+                          {editingSchedule ? 'Хадгалах' : 'Нэмэх'}
+                        </button>
+                      </div>
+                    </form>
+
+                    <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden border border-slate-100">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                          <th className="p-4 font-semibold">Огноо</th>
+                          <th className="p-4 font-semibold">Цаг</th>
+                          <th className="p-4 font-semibold">Гарчиг</th>
+                          <th className="p-4 font-semibold w-24 text-center">Үйлдэл</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {schedules.length === 0 ? (
+                          <tr><td colSpan={4} className="p-8 text-center text-slate-400">Хөтөлбөр байхгүй байна</td></tr>
+                        ) : (
+                          schedules.map((schedule) => (
+                            <tr key={schedule.id} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="p-4 text-sm font-medium text-slate-700">{schedule.date}</td>
+                              <td className="p-4 text-sm font-bold text-emerald-600 space-nowrap">{schedule.time}</td>
+                              <td className="p-4">
+                                <div className="font-semibold text-slate-800">{schedule.title}</div>
+                                {schedule.description && <div className="text-xs text-slate-500 mt-1 line-clamp-2">{schedule.description}</div>}
+                              </td>
+                              <td className="p-4">
+                                <div className="flex items-center justify-center gap-1">
+                                  <button 
+                                    onClick={() => editSchedule(schedule)}
+                                    className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDeleteSchedule(schedule.id)}
+                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
                 {activeTab === 'analytics' && (
                   <div className="p-6">

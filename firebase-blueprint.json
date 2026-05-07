@@ -37,6 +37,18 @@
       },
       "required": ["firstName", "lastName", "phone", "email", "createdAt"]
     },
+    "Exhibitor": {
+      "title": "Exhibitor",
+      "description": "An organization that has booked a booth and will be displayed on the website.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "activity": { "type": "string" },
+        "booth": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "activity", "booth", "createdAt"]
+    },
     "PageView": {
       "title": "Page View",
       "description": "Record of a site visit.",
@@ -47,6 +59,19 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["path", "userAgent", "createdAt"]
+    },
+    "Schedule": {
+      "title": "Schedule",
+      "description": "Event schedule items.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["date", "time", "title", "description", "createdAt"]
     }
   },
   "firestore": {
@@ -61,6 +86,14 @@
     "/visitor_registrations/{registrationId}": {
       "schema": "VisitorRegistration",
       "description": "Collection of visitor registrations."
+    },
+    "/exhibitors/{exhibitorId}": {
+      "schema": "Exhibitor",
+      "description": "Collection of exhibitors (booked booths)."
+    },
+    "/schedules/{scheduleId}": {
+      "schema": "Schedule",
+      "description": "Collection of event schedules."
     },
     "/page_views/{viewId}": {
       "schema": "PageView",

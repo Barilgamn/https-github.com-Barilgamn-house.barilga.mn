@@ -79,6 +79,46 @@ service cloud.firestore {
         && data.createdAt == request.time;
     }
 
+    // Exhibitor Validation
+    function isValidExhibitor(data) {
+      return data.keys().hasAll(['name', 'activity', 'booth', 'createdAt'])
+        && data.keys().size() == 4
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.activity is string && data.activity.size() > 0 && data.activity.size() <= 200
+        && data.booth is string && data.booth.size() > 0 && data.booth.size() <= 50
+        && data.createdAt == request.time;
+    }
+
+    // Collection: Exhibitors
+    match /exhibitors/{exhibitorId} {
+      allow read, list: if true;
+      allow create: if isAdmin() && isValidId(exhibitorId) && isValidExhibitor(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Schedule Validation
+    function isValidSchedule(data) {
+      return data.keys().hasAll(['date', 'time', 'title', 'description', 'createdAt'])
+        && data.keys().size() == 5
+        && data.date is string && data.date.size() > 0 && data.date.size() <= 50
+        && data.time is string && data.time.size() > 0 && data.time.size() <= 50
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.description is string && data.description.size() >= 0 && data.description.size() <= 1000
+        && data.createdAt == request.time;
+    }
+
+    // Collection: Schedules
+    match /schedules/{scheduleId} {
+      allow read, list: if true;
+      allow create: if isAdmin() && isValidId(scheduleId) && isValidSchedule(incoming());
+      allow update: if isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['date', 'time', 'title', 'description'])
+                    && (!('date' in incoming()) || (incoming().date is string && incoming().date.size() > 0 && incoming().date.size() <= 50))
+                    && (!('time' in incoming()) || (incoming().time is string && incoming().time.size() > 0 && incoming().time.size() <= 50))
+                    && (!('title' in incoming()) || (incoming().title is string && incoming().title.size() > 0 && incoming().title.size() <= 200))
+                    && (!('description' in incoming()) || (incoming().description is string && incoming().description.size() >= 0 && incoming().description.size() <= 1000));
+      allow delete: if isAdmin();
+    }
+
     // Collection: Page Views
     match /page_views/{viewId} {
       allow create: if isValidId(viewId) && isValidPageView(incoming());
