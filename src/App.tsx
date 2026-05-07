@@ -901,7 +901,7 @@ export default function App() {
           {/* Right Side: Map */}
           <div className="w-full lg:w-1/2 h-[450px] lg:h-auto min-h-[500px]">
             <iframe 
-              src="https://maps.google.com/maps?q=47.8823337,106.7865548&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=%D0%91%D0%B0%D1%80%D0%B8%D0%BB%D0%B3%D0%B0%D1%87%D0%B8%D0%BD%20%D1%85%D1%83%D0%B4%D0%B0%D0%BB%D0%B4%D0%B0%D0%B0%D0%BD%D1%8B%20%D1%82%D3%A9%D0%B2&t=&z=16&ie=UTF8&iwloc=&output=embed"
               width="100%" 
               height="100%" 
               style={{ border: 0, filter: 'grayscale(0.2) contrast(1.1)' }} 
