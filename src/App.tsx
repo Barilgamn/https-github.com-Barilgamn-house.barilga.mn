@@ -96,7 +96,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const bookedBooths = ['A11', 'A12', 'A15', 'A16', 'A17', 'A18', 'A20', 'A21', 'A22', 'A29', 'A30', 'A31', 'A32', 'A33', 'A34', 'A35', 'A36', 'A39', 'A40', 'A41', 'A42', 'A49', 'A50', 'A51', 'A52', 'A59', 'A60', 'A61', 'A62', 'A69', 'A70', 'A71', 'A72', 'A73', 'A74', 'A79', 'A80', 'A81', 'A82', 'A89', 'A90'];
+  const bookedBooths = ['A15', 'A16', 'A17', 'A20', 'A29', 'A30', 'A31', 'A33', 'A34', 'A35', 'A36', 'A37', 'A41', 'A59', 'A69', 'A71', 'A73', 'A75', 'A81', 'ЗАДГАЙ 1', 'ЗАДГАЙ 2', 'ЗАДГАЙ 3'];
   const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
 
   const scrollToBooking = () => {
@@ -568,31 +568,32 @@ export default function App() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[
-              { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", logo: "https://ui-avatars.com/api/?name=MS&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Монкабель системс", activity: "Цахилгаан, холбооны кабель", logo: "https://ui-avatars.com/api/?name=МС&background=0f172a&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Нартын Голомт", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=НГ&background=b45309&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Централ Рич Монголиа", activity: "Барилгын материал", logo: "https://ui-avatars.com/api/?name=ЦР&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ХБ, Хотын стандартын газар", activity: "Төрийн байгууллага", logo: "https://ui-avatars.com/api/?name=ХБ&background=0369a1&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Агаар, орчин бохирдолтой тэмцэх", activity: "Төрийн байгууллага", logo: "https://ui-avatars.com/api/?name=АО&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Клаймакс Интернэшнл", activity: "Барилгын тоног төхөөрөмж", logo: "https://ui-avatars.com/api/?name=КИ&background=0f172a&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС", activity: "Амины орон сууц, хаус барилга", logo: "https://ui-avatars.com/api/?name=ГӨ&background=eab308&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ЭЙ АР ТИ ЮУ (ARTU)", activity: "Архитектур, интерьер", logo: "https://ui-avatars.com/api/?name=AR&background=be123c&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "БУЯНТ СУТАЙН ХИШИГ", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=БС&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "АГЛУТ", activity: "Инжинер, төсөл", logo: "https://ui-avatars.com/api/?name=АГ&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ХАНГАЛ КОНСТРАКШН", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=ХК&background=b45309&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", logo: "https://ui-avatars.com/api/?name=ЭК&background=eab308&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Эс Ти Креатив", activity: "Интерьер дизайн", logo: "https://ui-avatars.com/api/?name=ST&background=be123c&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ЕВРОЗИГИ", activity: "Барилгын материал", logo: "https://ui-avatars.com/api/?name=ЕЗ&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Эс Эн Ди", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=SD&background=0f172a&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Болд чин гэгээ", activity: "Цахилгаан, гэрэлтүүлэг", logo: "https://ui-avatars.com/api/?name=БЧ&background=eab308&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "Эн Си Ди Прекон", activity: "Угсармал барилга", logo: "https://ui-avatars.com/api/?name=NC&background=0369a1&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "\"Өөрийн Байшин\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", logo: "https://ui-avatars.com/api/?name=ӨБ&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
-              { name: "ТӨГС ХУРЦ СИСТЕМС", activity: "Инженерийн шугам сүлжээ", logo: "https://ui-avatars.com/api/?name=ТХ&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" }
+              { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
+              { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
+              { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
+              { name: "Централ Рич Монголиа ХХК", activity: "Барилгын материал", booth: "A20" },
+              { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
+              { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
+              { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын тоног төхөөрөмж", booth: "A31, A71" },
+              { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц, хаус барилга", booth: "A33" },
+              { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
+              { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
+              { name: "АГЛУТ ХХК", activity: "Инжинер, төсөл", booth: "A36" },
+              { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
+              { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД ХХК", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
+              { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
+              { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69, A81" },
+              { name: "ЭС ЭН ДИ ХХК", activity: "Барилга угсралт", booth: "A73" },
+              { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Цахилгаан, гэрэлтүүлэг", booth: "A75" },
+              { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "ЗАДГАЙ 1" },
+              { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "ЗАДГАЙ 2" },
+              { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
             ].map((company, idx) => (
               <div key={idx} className="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col items-center justify-center text-center gap-2 group h-full">
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg mb-1">{company.name}</h4>
                   <p className="text-emerald-600 text-sm font-medium">{company.activity}</p>
+                  <p className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold inline-block mt-3 border border-slate-200 shadow-sm">Талбай: {company.booth}</p>
                 </div>
               </div>
             ))}
