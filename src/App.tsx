@@ -588,7 +588,7 @@ export default function App() {
               { name: "Эн Си Ди Прекон", activity: "Угсармал барилга", logo: "https://ui-avatars.com/api/?name=NC&background=0369a1&color=fff&size=128&font-size=0.33&bold=true" },
               { name: "\"Өөрийн Байшин\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", logo: "https://ui-avatars.com/api/?name=ӨБ&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
               { name: "ТӨГС ХУРЦ СИСТЕМС", activity: "Инженерийн шугам сүлжээ", logo: "https://ui-avatars.com/api/?name=ТХ&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" }
-            ].slice((companiesPage - 1) * itemsPerPage, companiesPage * itemsPerPage).map((company, idx) => (
+            ].map((company, idx) => (
               <div key={idx} className="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col items-center text-center gap-4 group">
                 <div className="w-20 h-20 rounded-full overflow-hidden border border-slate-100 bg-slate-50 group-hover:scale-105 transition-transform duration-300">
                   <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
@@ -599,26 +599,6 @@ export default function App() {
                 </div>
               </div>
             ))}
-          </div>
-          
-          <div className="mt-12 flex justify-center items-center gap-4">
-            <button
-              onClick={() => setCompaniesPage(prev => Math.max(1, prev - 1))}
-              disabled={companiesPage === 1}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-slate-100 transition-colors"
-            >
-              &larr;
-            </button>
-            <div className="text-slate-600 font-medium">
-              {d.page} {companiesPage} / {Math.ceil(20 / itemsPerPage)}
-            </div>
-            <button
-              onClick={() => setCompaniesPage(prev => Math.min(Math.ceil(20 / itemsPerPage), prev + 1))}
-              disabled={companiesPage === Math.ceil(20 / itemsPerPage)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-slate-100 transition-colors"
-            >
-              &rarr;
-            </button>
           </div>
         </div>
       </section>
