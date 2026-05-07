@@ -36,6 +36,17 @@
         "createdAt": { "type": "string", "format": "date-time", "description": "The timestamp when the registration was created." }
       },
       "required": ["firstName", "lastName", "phone", "email", "createdAt"]
+    },
+    "PageView": {
+      "title": "Page View",
+      "description": "Record of a site visit.",
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["path", "userAgent", "createdAt"]
     }
   },
   "firestore": {
@@ -50,6 +61,10 @@
     "/visitor_registrations/{registrationId}": {
       "schema": "VisitorRegistration",
       "description": "Collection of visitor registrations."
+    },
+    "/page_views/{viewId}": {
+      "schema": "PageView",
+      "description": "Collection of page views."
     }
   }
 }

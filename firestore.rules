@@ -69,5 +69,21 @@ service cloud.firestore {
       allow read, get: if isSignedIn();
       allow write, delete: if isAdmin();
     }
+
+    // Page View Validation
+    function isValidPageView(data) {
+      return data.keys().hasAll(['path', 'userAgent', 'createdAt'])
+        && data.keys().size() == 3
+        && data.path is string && data.path.size() > 0 && data.path.size() <= 200
+        && data.userAgent is string && data.userAgent.size() >= 0 && data.userAgent.size() <= 500
+        && data.createdAt == request.time;
+    }
+
+    // Collection: Page Views
+    match /page_views/{viewId} {
+      allow create: if isValidId(viewId) && isValidPageView(incoming());
+      
+      allow read, list, delete: if isAdmin();
+    }
   }
 }

@@ -30,12 +30,20 @@ interface VisitorRegistration {
   createdAt: string | Date;
 }
 
+interface PageView {
+  id: string;
+  path: string;
+  userAgent: string;
+  createdAt: string | Date;
+}
+
 export default function AdminDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [boothBookings, setBoothBookings] = useState<BoothBooking[]>([]);
   const [visitorRegistrations, setVisitorRegistrations] = useState<VisitorRegistration[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
-  const [activeTab, setActiveTab] = useState<'booths' | 'visitors' | 'admins'>('booths');
+  const [pageViews, setPageViews] = useState<PageView[]>([]);
+  const [activeTab, setActiveTab] = useState<'booths' | 'visitors' | 'admins' | 'analytics'>('booths');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [loading, setLoading] = useState(true);
   const [authChecking, setAuthChecking] = useState(true);
@@ -99,12 +107,26 @@ export default function AdminDashboard() {
       }
     });
 
+    const pageViewsQuery = query(collection(db, 'page_views'), orderBy('createdAt', 'desc'));
+    const unsubscribePageViews = onSnapshot(pageViewsQuery, (snapshot) => {
+      const data: PageView[] = [];
+      snapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() } as PageView);
+      });
+      setPageViews(data);
+    }, (error) => {
+      if (!error.message.includes('permission-denied')) {
+        handleFirestoreError(error, OperationType.LIST, 'page_views');
+      }
+    });
+
     setLoading(false);
 
     return () => {
       unsubscribeBooths();
       unsubscribeVisitors();
       unsubscribeAdmins();
+      unsubscribePageViews();
     };
   }, [user]);
 
@@ -239,11 +261,8 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <nav className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-xl font-black text-slate-800 tracking-tighter flex items-center gap-2">
-             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-               <span className="text-white text-sm">Х</span>
-             </div>
-             ХАУС &amp; БАРИЛГА ЭКСПО
+          <Link to="/" className="flex items-center gap-2">
+             <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="ХАУС & БАРИЛГА ЭКСПО" className="h-10 sm:h-12 w-auto" />
           </Link>
           <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full uppercase tracking-widest hidden sm:block">Admin</span>
         </div>
@@ -340,6 +359,17 @@ export default function AdminDashboard() {
                 >
                   <ShieldCheck className="w-4 h-4 inline-block mr-2" />
                   Админ удирдлага
+                </button>
+                <button
+                  className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base border-b-2 transition-colors ${
+                    activeTab === 'analytics' 
+                      ? 'border-emerald-500 text-emerald-700 bg-emerald-50/50' 
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                  }`}
+                  onClick={() => setActiveTab('analytics')}
+                >
+                  <Activity className="w-4 h-4 inline-block mr-2" />
+                  Хандалт
                 </button>
               </div>
 
@@ -476,6 +506,53 @@ export default function AdminDashboard() {
                       )}
                     </tbody>
                   </table>
+                )}
+                {activeTab === 'analytics' && (
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                        <p className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">Нийт хуудас үзэлт</p>
+                        <p className="text-4xl font-black text-slate-900">{pageViews.length}</p>
+                      </div>
+                      <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                        <p className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">Өнөөдрийн хандалт</p>
+                        <p className="text-4xl font-black text-slate-900">
+                          {pageViews.filter(v => {
+                             if (!v.createdAt) return false;
+                             const date = (v.createdAt as any).toDate ? (v.createdAt as any).toDate() : new Date(v.createdAt as string);
+                             const today = new Date();
+                             return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+                          }).length}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">Сүүлийн үеийн хандалтууд</h3>
+                    <div className="overflow-hidden border border-slate-200 rounded-xl">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                            <th className="p-4 font-semibold">Огноо</th>
+                            <th className="p-4 font-semibold">Зам</th>
+                            <th className="p-4 font-semibold hidden md:table-cell">Төхөөрөмж / Хөтөч</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {pageViews.length === 0 ? (
+                            <tr><td colSpan={3} className="p-8 text-center text-slate-400">Хандалтын мэдээлэл байхгүй байна</td></tr>
+                          ) : (
+                            pageViews.slice(0, 100).map((view) => (
+                              <tr key={view.id} className="hover:bg-slate-50/50">
+                                <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{formatDate(view.createdAt)}</td>
+                                <td className="p-4 text-sm font-medium text-emerald-600">{view.path}</td>
+                                <td className="p-4 text-xs text-slate-500 hidden md:table-cell max-w-sm truncate" title={view.userAgent}>{view.userAgent}</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

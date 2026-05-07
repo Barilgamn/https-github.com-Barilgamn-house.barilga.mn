@@ -29,8 +29,21 @@ export default function App() {
   const [companiesPage, setCompaniesPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Connection Test
+  // Connection Test & Page View Tracking
   React.useEffect(() => {
+    async function trackPageView() {
+      try {
+        await addDoc(collection(db, 'page_views'), {
+          path: window.location.pathname,
+          userAgent: window.navigator.userAgent.substring(0, 500),
+          createdAt: serverTimestamp()
+        });
+      } catch (error) {
+        // Silently fail page tracking
+      }
+    }
+    trackPageView();
+
     async function testConnection() {
       try {
         await getDocFromServer(doc(db, 'test', 'connection'));
