@@ -853,47 +853,64 @@ export default function App() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section 
-        id="contact" 
-        className="relative pt-32 pb-32 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800 scroll-mt-20 overflow-hidden"
-        style={{
-          backgroundImage: 'url("https://www.barilga.mn/files/9350f25743c84db482c07815432405f7.png?d=0")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center bottom',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        <div className="absolute inset-0 bg-white/60 dark:bg-slate-950/80 backdrop-blur-[1px]"></div>
-        <div className="relative max-w-7xl mx-auto flex flex-col items-center justify-center gap-8 z-10">
-          <div className="text-center">
-             <div className="inline-block bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-2 rounded-full mb-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-               <span className="text-slate-800 dark:text-slate-300 text-xs tracking-wider uppercase font-bold">{d.contactBadge}</span>
-             </div>
-             <br />
-             <a href="tel:99907816" className="inline-flex items-center gap-4 text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors bg-white/90 border border-slate-200 dark:bg-slate-900/90 dark:border-slate-800 px-8 py-5 rounded-3xl font-mono text-3xl font-bold shadow-xl backdrop-blur-sm group hover:scale-[1.02] active:scale-[0.98]">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Phone className="w-6 h-6 text-emerald-600 dark:text-emerald-400 fill-emerald-600 dark:fill-emerald-400" />
-                </div>
-                99907816
-             </a>
-          </div>
-        </div>
-      </section>
+      {/* Contact & Map Section */}
+      <section id="contact" className="bg-slate-950 border-t border-slate-800 scroll-mt-20 overflow-hidden relative">
+        <div className="flex flex-col lg:flex-row">
+          
+          {/* Left Side: Contact Info */}
+          <div className="w-full lg:w-1/2 p-12 lg:p-20 flex flex-col justify-center bg-slate-950 relative"
+               style={{
+                 backgroundImage: 'url("https://www.barilga.mn/files/9350f25743c84db482c07815432405f7.png?d=0")',
+                 backgroundSize: 'cover',
+                 backgroundPosition: 'center bottom',
+                 backgroundBlendMode: 'overlay',
+               }}
+          >
+            <div className="absolute inset-0 bg-slate-950/80"></div>
+            
+            <div className="relative z-10 max-w-md mx-auto lg:mx-0 w-full lg:pr-10">
+              <div className="inline-block bg-slate-900/80 backdrop-blur-md px-6 py-2 rounded-full mb-8 border border-slate-800">
+                <span className="text-slate-300 text-xs tracking-wider uppercase font-bold">{d.contactBadge}</span>
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Холбоо барих</h2>
+              
+              <div className="space-y-6 mb-12">
+                <a href="tel:99907816" className="flex items-center gap-5 text-slate-300 hover:text-emerald-400 transition-colors group">
+                  <div className="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center border border-slate-800 group-hover:border-emerald-500/50 group-hover:scale-110 transition-all shadow-lg">
+                    <Phone className="w-6 h-6 text-emerald-400 fill-emerald-400/20" />
+                  </div>
+                  <span className="font-mono text-3xl md:text-4xl font-bold">99907816</span>
+                </a>
+              </div>
 
-      {/* Location Map Section */}
-      <section className="bg-slate-950 border-t border-slate-800 overflow-hidden">
-        <div className="w-full h-[400px] md:h-[500px]">
-          <iframe 
-            src="https://maps.google.com/maps?q=47.8823337,106.7865548&t=&z=16&ie=UTF8&iwloc=&output=embed"
-            width="100%" 
-            height="100%" 
-            style={{ border: 0, filter: 'grayscale(0.2) contrast(1.1)' }} 
-            allowFullScreen={true} 
-            loading="lazy" 
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Үзэсгэлэн болох байршил"
-          ></iframe>
+              <div>
+                <h3 className="text-slate-500 uppercase tracking-widest text-xs font-bold mb-4">Биднийг дагах</h3>
+                <div className="flex items-center gap-4">
+                  <a href="https://www.facebook.com/barilgamn" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-slate-800 transition-colors border border-slate-800 hover:border-blue-500/50 shadow-md">
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                  <a href="https://x.com/Barilga_MN" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors border border-slate-800 hover:border-slate-500/50 shadow-md">
+                    <Twitter className="w-5 h-5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side: Map */}
+          <div className="w-full lg:w-1/2 h-[450px] lg:h-auto min-h-[500px]">
+            <iframe 
+              src="https://maps.google.com/maps?q=47.8823337,106.7865548&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              width="100%" 
+              height="100%" 
+              style={{ border: 0, filter: 'grayscale(0.2) contrast(1.1)' }} 
+              allowFullScreen={true} 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Үзэсгэлэн болох байршил"
+            ></iframe>
+          </div>
         </div>
       </section>
 
@@ -904,15 +921,6 @@ export default function App() {
             <p>&copy; {new Date().getFullYear()} {d.footer}</p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <a href="https://www.facebook.com/barilgamn" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-slate-800 transition-colors border border-slate-800 hover:border-blue-500/30">
-              <Facebook className="w-5 h-5" />
-            </a>
-            <a href="https://x.com/Barilga_MN" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors border border-slate-800 hover:border-slate-500/30">
-              <Twitter className="w-5 h-5" />
-            </a>
-          </div>
-
           <p className="font-medium text-xs bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
             Powered by AI Studio
           </p>
