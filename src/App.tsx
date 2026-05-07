@@ -276,7 +276,7 @@ export default function App() {
       <nav className={`border-b border-white/10 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 shadow-lg shadow-black/5 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
           <div className="flex items-center gap-3 py-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="Амины Орон Сууц ЭКСПО" className="h-14 sm:h-16 lg:h-20 w-auto" />
+            <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="АМИНЫ ОРОН СУУЦ ЭКСПО 2026" className="h-14 sm:h-16 lg:h-20 w-auto" />
           </div>
           
           {/* Desktop Menu */}
@@ -769,7 +769,7 @@ export default function App() {
           <div className="mb-20">
             <h3 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-8">{d.organizersMain}</h3>
             <a href="https://www.barilga.mn/" target="_blank" rel="noopener noreferrer" className="w-72 h-28 bg-white rounded-3xl shadow-[0_10px_40px_rgb(0,0,0,0.08)] flex items-center justify-center mx-auto border border-slate-100 transition-transform hover:-translate-y-1">
-               <img src="https://i0.wp.com/barilgaexpo.mn/wp-content/uploads/2024/06/Barilga.mn-shuud-ashiglah-logo-Copy-Copy-2-1.png?resize=2048%2C568&ssl=1" alt="barilga.mn" className="w-56 h-auto" />
+               <img src="https://i0.wp.com/barilgaexpo.mn/wp-content/uploads/2024/06/Barilga.mn-shuud-ashiglah-logo-Copy-Copy-2-1.png?resize=2048%2C568&ssl=1" alt="АМИНЫ ОРОН СУУЦ ЭКСПО 2026 ерөнхий зохион байгуулагч" className="w-56 h-auto" />
             </a>
           </div>
 
