@@ -568,18 +568,26 @@ export default function App() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[
-              { name: "Сэнж Сант ХХК", activity: "Амины орон сууц, барилга угсралт", logo: "https://ui-avatars.com/api/?name=С+С&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Ногоон Байгууламж ХХК", activity: "Гадна тохижилт, ногоон барилга", logo: "https://ui-avatars.com/api/?name=Н+Б&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Смарт Энержи ХХК", activity: "Сэргээгдэх эрчим хүч", logo: "https://ui-avatars.com/api/?name=С+Э&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Ухаалаг Шийдэл ХХК", activity: "Ухаалаг гэр (Smart home)", logo: "https://ui-avatars.com/api/?name=У+Ш&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Интерьер Дизайн ХХК", activity: "Дотоод засал, интерьер", logo: "https://ui-avatars.com/api/?name=И+Д&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Инженер Системс", activity: "Инженерийн шийдэл", logo: "https://ui-avatars.com/api/?name=И+С&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Монгол Материал", activity: "Барилгын материал", logo: "https://ui-avatars.com/api/?name=М+М&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Голомт Банк", activity: "Санхүүгийн үйлчилгээ", logo: "https://ui-avatars.com/api/?name=Г+Б&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Барилга Сервис", activity: "Зөвлөх үйлчилгээ", logo: "https://ui-avatars.com/api/?name=Б+С&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Ус Дулаан ХХК", activity: "Ус, халаалтын систем", logo: "https://ui-avatars.com/api/?name=У+Д&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Эко Хаус", activity: "Модон хийц, барилга", logo: "https://ui-avatars.com/api/?name=Э+Х&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" },
-              { name: "Смарт Винд", activity: "Цонх, хаалга", logo: "https://ui-avatars.com/api/?name=С+В&background=e2e8f0&color=0f172a&size=128&font-size=0.33&bold=true" }
+              { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", logo: "https://ui-avatars.com/api/?name=MS&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Монкабель системс", activity: "Цахилгаан, холбооны кабель", logo: "https://ui-avatars.com/api/?name=МС&background=0f172a&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Нартын Голомт", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=НГ&background=b45309&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Централ Рич Монголиа", activity: "Барилгын материал", logo: "https://ui-avatars.com/api/?name=ЦР&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ХБ, Хотын стандартын газар", activity: "Төрийн байгууллага", logo: "https://ui-avatars.com/api/?name=ХБ&background=0369a1&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Агаар, орчин бохирдолтой тэмцэх", activity: "Төрийн байгууллага", logo: "https://ui-avatars.com/api/?name=АО&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Клаймакс Интернэшнл", activity: "Барилгын тоног төхөөрөмж", logo: "https://ui-avatars.com/api/?name=КИ&background=0f172a&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС", activity: "Амины орон сууц, хаус барилга", logo: "https://ui-avatars.com/api/?name=ГӨ&background=eab308&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ЭЙ АР ТИ ЮУ (ARTU)", activity: "Архитектур, интерьер", logo: "https://ui-avatars.com/api/?name=AR&background=be123c&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "БУЯНТ СУТАЙН ХИШИГ", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=БС&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "АГЛУТ", activity: "Инжинер, төсөл", logo: "https://ui-avatars.com/api/?name=АГ&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ХАНГАЛ КОНСТРАКШН", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=ХК&background=b45309&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", logo: "https://ui-avatars.com/api/?name=ЭК&background=eab308&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Эс Ти Креатив", activity: "Интерьер дизайн", logo: "https://ui-avatars.com/api/?name=ST&background=be123c&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ЕВРОЗИГИ", activity: "Барилгын материал", logo: "https://ui-avatars.com/api/?name=ЕЗ&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Эс Эн Ди", activity: "Барилга угсралт", logo: "https://ui-avatars.com/api/?name=SD&background=0f172a&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Болд чин гэгээ", activity: "Цахилгаан, гэрэлтүүлэг", logo: "https://ui-avatars.com/api/?name=БЧ&background=eab308&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "Эн Си Ди Прекон", activity: "Угсармал барилга", logo: "https://ui-avatars.com/api/?name=NC&background=0369a1&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "\"Өөрийн Байшин\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", logo: "https://ui-avatars.com/api/?name=ӨБ&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
+              { name: "ТӨГС ХУРЦ СИСТЕМС", activity: "Инженерийн шугам сүлжээ", logo: "https://ui-avatars.com/api/?name=ТХ&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" }
             ].slice((companiesPage - 1) * itemsPerPage, companiesPage * itemsPerPage).map((company, idx) => (
               <div key={idx} className="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col items-center text-center gap-4 group">
                 <div className="w-20 h-20 rounded-full overflow-hidden border border-slate-100 bg-slate-50 group-hover:scale-105 transition-transform duration-300">
@@ -602,11 +610,11 @@ export default function App() {
               &larr;
             </button>
             <div className="text-slate-600 font-medium">
-              {d.page} {companiesPage} / {Math.ceil(12 / itemsPerPage)}
+              {d.page} {companiesPage} / {Math.ceil(20 / itemsPerPage)}
             </div>
             <button
-              onClick={() => setCompaniesPage(prev => Math.min(Math.ceil(12 / itemsPerPage), prev + 1))}
-              disabled={companiesPage === Math.ceil(12 / itemsPerPage)}
+              onClick={() => setCompaniesPage(prev => Math.min(Math.ceil(20 / itemsPerPage), prev + 1))}
+              disabled={companiesPage === Math.ceil(20 / itemsPerPage)}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-slate-100 transition-colors"
             >
               &rarr;
