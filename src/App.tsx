@@ -589,10 +589,7 @@ export default function App() {
               { name: "\"Өөрийн Байшин\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", logo: "https://ui-avatars.com/api/?name=ӨБ&background=047857&color=fff&size=128&font-size=0.33&bold=true" },
               { name: "ТӨГС ХУРЦ СИСТЕМС", activity: "Инженерийн шугам сүлжээ", logo: "https://ui-avatars.com/api/?name=ТХ&background=1d4ed8&color=fff&size=128&font-size=0.33&bold=true" }
             ].map((company, idx) => (
-              <div key={idx} className="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col items-center text-center gap-4 group">
-                <div className="w-20 h-20 rounded-full overflow-hidden border border-slate-100 bg-slate-50 group-hover:scale-105 transition-transform duration-300">
-                  <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
-                </div>
+              <div key={idx} className="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col items-center justify-center text-center gap-2 group h-full">
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg mb-1">{company.name}</h4>
                   <p className="text-emerald-600 text-sm font-medium">{company.activity}</p>
