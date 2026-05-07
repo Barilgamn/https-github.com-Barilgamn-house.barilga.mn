@@ -19,6 +19,13 @@ service cloud.firestore {
       return request.resource.data;
     }
 
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'info@barilga.mn' || 
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+      ) && request.auth.token.email_verified == true;
+    }
+
     // Booth Booking Validation
     function isValidBoothBooking(data) {
       return data.keys().hasAll(['companyName', 'contactName', 'phone', 'boothId', 'createdAt'])
@@ -45,15 +52,22 @@ service cloud.firestore {
     match /booth_bookings/{bookingId} {
       // Allow public creation
       allow create: if isValidId(bookingId) && isValidBoothBooking(incoming());
-      // Admin only can read all (assuming admin role if implemented later, or just deny for now)
-      // allow read: if false; 
+      
+      allow read, list, delete: if isAdmin();
     }
 
     // Collection: Visitor Registrations
     match /visitor_registrations/{registrationId} {
       // Allow public creation
       allow create: if isValidId(registrationId) && isValidVisitorRegistration(incoming());
-      // allow read: if false;
+      
+      allow read, list, delete: if isAdmin();
+    }
+
+    // Collection: Admins
+    match /admins/{email} {
+      allow read, get: if isSignedIn();
+      allow write, delete: if isAdmin();
     }
   }
 }

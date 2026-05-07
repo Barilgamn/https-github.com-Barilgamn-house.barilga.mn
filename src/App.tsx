@@ -96,7 +96,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const bookedBooths = ['A17', 'A26', 'A33', 'A48', 'A55', 'A57', 'A65', 'A69', 'A72'];
+  const bookedBooths = ['A11', 'A12', 'A15', 'A16', 'A17', 'A18', 'A20', 'A21', 'A22', 'A29', 'A30', 'A31', 'A32', 'A33', 'A34', 'A35', 'A36', 'A39', 'A40', 'A41', 'A42', 'A49', 'A50', 'A51', 'A52', 'A59', 'A60', 'A61', 'A62', 'A69', 'A70', 'A71', 'A72', 'A73', 'A74', 'A79', 'A80', 'A81', 'A82', 'A89', 'A90'];
   const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
 
   const scrollToBooking = () => {
@@ -127,8 +127,10 @@ export default function App() {
     let btnClass = "relative flex flex-col items-center justify-center border transition-all cursor-pointer hover:shadow-md shrink-0 ";
     btnClass += "h-12 w-12 sm:h-14 sm:w-14 text-xs sm:text-sm font-bold ";
 
-    if (isBooked) {
-      btnClass += "bg-white border-slate-300 text-slate-800 cursor-not-allowed";
+    if (isBooked && isSponsor) {
+      btnClass += "bg-[#a8deb6] border-[#8bc39b] text-slate-800 cursor-not-allowed opacity-80";
+    } else if (isBooked) {
+      btnClass += "bg-white border-slate-300 text-slate-800 cursor-not-allowed opacity-80 text-opacity-50";
     } else if (isSponsor) {
       if (isSelected) {
         btnClass += "bg-emerald-500 border-emerald-600 text-white shadow-md scale-105 z-10";

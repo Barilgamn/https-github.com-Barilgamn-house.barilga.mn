@@ -1,5 +1,16 @@
 {
   "entities": {
+    "AdminUser": {
+      "title": "Admin User",
+      "description": "A user with administrative access",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" },
+        "addedBy": { "type": "string" }
+      },
+      "required": ["email", "addedAt"]
+    },
     "BoothBooking": {
       "title": "Booth Booking",
       "description": "Information about a company booking a booth at the expo.",
@@ -28,6 +39,10 @@
     }
   },
   "firestore": {
+    "/admins/{email}": {
+      "schema": "AdminUser",
+      "description": "List of authorized admin emails"
+    },
     "/booth_bookings/{bookingId}": {
       "schema": "BoothBooking",
       "description": "Collection of booth booking registrations."

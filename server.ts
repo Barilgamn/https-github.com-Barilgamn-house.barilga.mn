@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,7 +15,7 @@ app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
 // 2. Start the server and bind to 0.0.0.0 IMMEDIATELY
 const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`>>> SERVER PREREQUISITE: Port ${PORT} is now OPEN`);
+  console.log(`>>> SERVER STARTING: Port ${PORT} is now OPEN`);
 });
 
 server.on('error', (err) => {
@@ -23,16 +24,34 @@ server.on('error', (err) => {
 });
 
 async function setupServer() {
-  const isProd = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "production " || !!process.env.K_SERVICE || !!process.env.FIREBASE_APP_HOSTING;
+  const isProd = process.env.NODE_ENV === "production";
   
   if (isProd) {
-    // In production, we serve from the root dist folder
-    const distPath = path.join(process.cwd(), 'dist');
+    const distPath = path.resolve(__dirname, 'dist');
+    const indexPath = path.join(distPath, 'index.html');
+
+    console.log(`>>> PRODUCTION MODE ENABLED`);
+    console.log(`>>> Current Directory: ${process.cwd()}`);
+    console.log(`>>> Dist Path: ${distPath}`);
+
+    if (!fs.existsSync(distPath)) {
+      console.warn(`!!! WARNING: Dist directory not found at ${distPath}`);
+    } else {
+      console.log(`>>> Dist directory found. Contents: ${fs.readdirSync(distPath).join(', ')}`);
+    }
+
     app.use(express.static(distPath));
+    
     app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        console.error(`!!! ERROR: index.html not found at ${indexPath}`);
+        res.status(500).send("Application build artifacts missing. Please rebuild.");
+      }
     });
   } else {
+    console.log(`>>> DEVELOPMENT MODE ENABLED`);
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -43,5 +62,5 @@ async function setupServer() {
 }
 
 setupServer().catch(err => {
-  console.error("Critical server error:", err);
+  console.error("!!! CRITICAL: setupServer failed:", err);
 });
