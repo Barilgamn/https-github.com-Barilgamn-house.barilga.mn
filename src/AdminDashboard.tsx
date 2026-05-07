@@ -115,6 +115,13 @@ export default function AdminDashboard() {
       await signInWithPopup(auth, provider);
     } catch (error: any) {
       console.error("Login failed:", error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        setAuthError('Нэвтрэх цонх хаагдлаа. Та дахин оролдоно уу.');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setAuthError('Энэ домайн дээр нэвтрэх эрхгүй байна. Firebase консол дээр Authorized domains хэсэгт сайтаа нэмнэ үү.');
+      } else {
+        setAuthError('Нэвтрэх үед алдаа гарлаа. Та хөтчийнхөө (Open in new tab) товчийг дарж шинэ цонхонд нээгээд үзээрэй. Алдаа: ' + error.message);
+      }
     }
   };
 
@@ -204,6 +211,13 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-2xl font-bold text-slate-800 mb-2">Админ Панел</h1>
           <p className="text-slate-500 mb-8">Энэ хэсэг рүү зөвхөн админ нэвтрэх боломжтой.</p>
+          
+          {authError && (
+            <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl text-sm border border-red-200">
+              {authError}
+            </div>
+          )}
+
           <button 
             onClick={handleLogin}
             className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-colors"
