@@ -237,13 +237,14 @@ export default function AdminDashboard() {
     }
     try {
       if (editingExhibitor) {
-        await updateDoc(doc(db, 'exhibitors', editingExhibitor.id), {
+        await setDoc(doc(db, 'exhibitors', editingExhibitor.id), {
           name: newExhibitor.name,
           activity: newExhibitor.activity,
           booth: newExhibitor.booth,
           isPaid: newExhibitor.isPaid
-        });
+        }, { merge: true });
         setEditingExhibitor(null);
+        alert("Байгууллагын мэдээлэл амжилттай шинэчлэгдлээ!");
       } else {
         const dbRef = collection(db, 'exhibitors');
         await setDoc(doc(dbRef), {
@@ -253,6 +254,7 @@ export default function AdminDashboard() {
            isPaid: newExhibitor.isPaid,
            createdAt: serverTimestamp()
         });
+        alert("Байгууллага амжилттай нэмэгдлээ!");
       }
       setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
       setIsAddingExhibitor(false);
@@ -289,13 +291,14 @@ export default function AdminDashboard() {
     }
     try {
       if (editingSchedule) {
-        await updateDoc(doc(db, 'schedules', editingSchedule.id), {
+        await setDoc(doc(db, 'schedules', editingSchedule.id), {
           date: newSchedule.date,
           time: newSchedule.time,
           title: newSchedule.title,
           description: newSchedule.description
-        });
+        }, { merge: true });
         setEditingSchedule(null);
+        alert("Хөтөлбөр амжилттай шинэчлэгдлээ!");
       } else {
         const dbRef = collection(db, 'schedules');
         await setDoc(doc(dbRef), {
@@ -305,6 +308,7 @@ export default function AdminDashboard() {
           description: newSchedule.description,
           createdAt: serverTimestamp()
         });
+        alert("Хөтөлбөр амжилттай нэмэгдлээ!");
       }
       setNewSchedule({ date: '', time: '', title: '', description: '' });
       setIsAddingSchedule(false);
@@ -1055,7 +1059,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center justify-center gap-1">
                                   <button 
                                     onClick={() => editSchedule(schedule)}
-                                    className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                    title="Засах"
                                   >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                                   </button>
