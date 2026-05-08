@@ -42,6 +42,7 @@ interface Exhibitor {
   name: string;
   activity: string;
   booth: string;
+  isPaid?: boolean;
   createdAt: string | Date;
 }
 
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [activeTab, setActiveTab] = useState<'booths' | 'exhibitors' | 'visitors' | 'admins' | 'schedules' | 'analytics'>('booths');
   const [newAdminEmail, setNewAdminEmail] = useState('');
-  const [newExhibitor, setNewExhibitor] = useState({ name: '', activity: '', booth: '' });
+  const [newExhibitor, setNewExhibitor] = useState({ name: '', activity: '', booth: '', isPaid: false });
   const [editingExhibitor, setEditingExhibitor] = useState<Exhibitor | null>(null);
   const [newSchedule, setNewSchedule] = useState({ date: '', time: '', title: '', description: '' });
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
@@ -237,7 +238,8 @@ export default function AdminDashboard() {
         await updateDoc(doc(db, 'exhibitors', editingExhibitor.id), {
           name: newExhibitor.name,
           activity: newExhibitor.activity,
-          booth: newExhibitor.booth
+          booth: newExhibitor.booth,
+          isPaid: newExhibitor.isPaid
         });
         setEditingExhibitor(null);
       } else {
@@ -246,10 +248,11 @@ export default function AdminDashboard() {
            name: newExhibitor.name,
            activity: newExhibitor.activity,
            booth: newExhibitor.booth,
+           isPaid: newExhibitor.isPaid,
            createdAt: serverTimestamp()
         });
       }
-      setNewExhibitor({ name: '', activity: '', booth: '' });
+      setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
     }
@@ -260,7 +263,8 @@ export default function AdminDashboard() {
     setNewExhibitor({
       name: exhibitor.name,
       activity: exhibitor.activity,
-      booth: exhibitor.booth
+      booth: exhibitor.booth,
+      isPaid: exhibitor.isPaid || false
     });
   };
 
@@ -451,8 +455,8 @@ export default function AdminDashboard() {
                   <Building className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Талбай захиалга</p>
-                  <p className="text-3xl font-bold text-slate-900">{boothBookings.length}</p>
+                  <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Оролцогч байгууллага</p>
+                  <p className="text-3xl font-bold text-slate-900">{exhibitors.length}</p>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
@@ -647,7 +651,7 @@ export default function AdminDashboard() {
 
                 {activeTab === 'exhibitors' && (
                   <div className="p-6">
-                    <form onSubmit={handleAddExhibitor} className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <form onSubmit={handleAddExhibitor} className="mb-8 grid grid-cols-1 md:grid-cols-5 gap-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Байгууллагын нэр</label>
                         <input
@@ -681,6 +685,18 @@ export default function AdminDashboard() {
                           required
                         />
                       </div>
+                      <div className="flex flex-col justify-center">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Төлбөр</label>
+                        <label className="flex items-center gap-2 cursor-pointer h-full pb-1">
+                          <input
+                            type="checkbox"
+                            checked={newExhibitor.isPaid}
+                            onChange={(e) => setNewExhibitor({...newExhibitor, isPaid: e.target.checked})}
+                            className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                          />
+                          <span className="text-sm font-medium text-slate-700">Төлсөн</span>
+                        </label>
+                      </div>
                       <div className="flex items-end gap-2">
                         <button 
                           type="submit"
@@ -693,7 +709,7 @@ export default function AdminDashboard() {
                             type="button"
                             onClick={() => {
                               setEditingExhibitor(null);
-                              setNewExhibitor({ name: '', activity: '', booth: '' });
+                              setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
                             }}
                             className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap h-[46px]"
                           >
@@ -710,12 +726,13 @@ export default function AdminDashboard() {
                           <th className="p-4 font-semibold">Компани</th>
                           <th className="p-4 font-semibold">Үйл ажиллагаа</th>
                           <th className="p-4 font-semibold text-center bg-emerald-50/30">Талбай</th>
+                          <th className="p-4 font-semibold text-center">Төлбөр</th>
                           <th className="p-4 font-semibold w-24 text-center">Үйлдэл</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {exhibitors.length === 0 ? (
-                          <tr><td colSpan={5} className="p-8 text-center text-slate-400">
+                          <tr><td colSpan={6} className="p-8 text-center text-slate-400">
                             <p className="mb-4">Мэдээлэл олдсонгүй</p>
                             <button 
                               onClick={async () => {
@@ -747,6 +764,7 @@ export default function AdminDashboard() {
                                       name: item.name,
                                       activity: item.activity,
                                       booth: item.booth,
+                                      isPaid: false,
                                       createdAt: serverTimestamp()
                                     });
                                   }
@@ -766,6 +784,17 @@ export default function AdminDashboard() {
                               <td className="p-4 font-medium text-slate-800">{exhibitor.name}</td>
                               <td className="p-4 text-sm text-slate-600">{exhibitor.activity}</td>
                               <td className="p-4 font-bold text-center text-emerald-700 bg-emerald-50/10 border-x border-slate-100">{exhibitor.booth}</td>
+                              <td className="p-4 text-center">
+                                {exhibitor.isPaid ? (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    Төлсөн
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                                    Хүлээгдэж буй
+                                  </span>
+                                )}
+                              </td>
                               <td className="p-4 text-center">
                                 <div className="flex items-center justify-center gap-2">
                                   <button 
