@@ -5,7 +5,8 @@
 
 import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Check, Info, Phone, Calendar, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun, Facebook, Twitter } from 'lucide-react';
+import { Check, Info, Phone, Calendar, Clock, ArrowRight, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun, Facebook, Twitter, Calculator } from 'lucide-react';
+import { BudgetEstimator } from './components/BudgetEstimator';
 import { translations, Lang } from './i18n';
 import { db, auth, handleFirestoreError, OperationType } from './firebase';
 import { collection, addDoc, serverTimestamp, doc, getDocFromServer, onSnapshot, query, orderBy } from 'firebase/firestore';
@@ -34,10 +35,60 @@ export default function App() {
   const [isVisitorModalOpen, setIsVisitorModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [activeAgendaDay, setActiveAgendaDay] = useState(0);
+
+  const AGENDA_DATA = [
+    {
+      date: "2026.05.15",
+      day: "БААСАН гараг",
+      title: "Нээлтийн өдөр",
+      color: "bg-amber-400",
+      items: [
+        { time: "11:00 - 12:00", title: "НЭЭЛТИЙН ҮЙЛ АЖИЛЛАГАА", desc: "" },
+        { time: "12:00 - 13:00", title: "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт", desc: "" },
+      ]
+    },
+    {
+      date: "2026.05.16",
+      day: "БЯМБА гараг",
+      title: "Амины орон сууцны төлөвлөлт",
+      color: "bg-rose-400",
+      items: [
+        { time: "11:00 - 12:00", title: "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт", desc: "" },
+        { time: "11:20 - 11:40", title: "Нийтэд хүртээмжтэй төлөвлөлт /АОС/", desc: "Илтгэгч: В.Ойдов (Нийтэд Хүртээмжтэй Пассив Лаборатори Хауз төсөл санаачлагч)" },
+        { time: "11:40 - 12:00", title: "Эрчим хүчний хэмнэлттэй барилгын дулаалга", desc: "Илтгэгч: Мөнхбаяр (ШУТИС ЭХИС-ийн багш)" },
+        { time: "12:00 - 12:20", title: "Эрчим хүчний хэмнэлттэй амины орон сууцны төлөвлөлт, зураг төсөлд тавигдах шаардлага", desc: "Илтгэгч: Отгончимэг (Амины орон сууцны инновац хөгжлийн төв)" },
+        { time: "12:20 - 12:40", title: "Хөрсний төрлүүдийн шинж чанар ба барилгын суурийн нөлөөлөл", desc: "Илтгэгч: О.Балдорж (Монгол Улсын зөвлөх инженер, Гавьяат барилгачин)" },
+        { time: "12:40 - 13:00", title: "Угсармал хийцийг амины орон сууцанд төлөвлөх нь", desc: "Илтгэгч: Д.Энхтүвшин (Эн Си Ди Прекон ХХК Гүйцэтгэх захирал, Зөвлөх инженер)" },
+        { time: "13:00 - 13:20", title: "Амины орон сууцны агаар сэлгэлтийг оновчтой төлөвлөх нь", desc: "Илтгэгч: Ц.Уранцэцэг (БАC-ийн багш доктор, дэд профессор)" },
+        { time: "13:20 - 13:40", title: "Амины орон сууцны төрөл хийцлэлийн сул ба давуу тал", desc: "Танилцуулга: Хишигмөнх Барилгачин групп" },
+      ]
+    },
+    {
+      date: "2026.05.17",
+      day: "НЯМ гараг",
+      title: "Инженерийн шийдэл & Санхүүжилт",
+      color: "bg-cyan-400",
+      items: [
+        { time: "11:00 - 12:00", title: "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт", desc: "" },
+        { time: "12:00 - 12:20", title: "Нар + Батарейн системийг амины орон сууцанд ухаалгаар төлөвлөх нь", desc: "Илтгэгч: Г.Бат-Эрдэнэ (Монкабел системс ХХК)" },
+        { time: "12:20 - 12:40", title: "Эрүүл хөрс, бохирын найдвартай шийдэл", desc: "Илтгэгч: С.Цэвэгсүрэн (ПЛАСТИК ЦЕНТР ХХК Ерөнхий захирал)" },
+        { time: "12:40 - 13:00", title: "Пассив амины орон сууц гэж юу вэ?", desc: "Илтгэгч: Ганбаа (Пассив барилгын хүрээлэн), А.Амарбаяр" },
+        { time: "13:00 - 13:40", title: "\"Дулаалгын ач холбогдол ба шийдэл\"", desc: "Илтгэгч: Ц.Түмэнбаяр (Хашаандаа сайхан амьдаръя)" },
+        { time: "13:40 - 14:00", title: "Сэргээгдэх эрчим хүчээр халаалтаа шийдэх нь", desc: "Илтгэгч: Ө.Отгонсүрэн (Грийн Солар ХХК)" },
+        { time: "14:20 - 14:40", title: "Hybrid house гэж юу вэ?", desc: "Илтгэгч: Ц.Бат-Эрдэнэ (HYBRID HOUSE LLC үүсгэн байгуулагч)" },
+        { time: "14:40 - 15:00", title: "Санхүүгийн дэмжлэг үзүүлэх боломжууд", desc: "Танилцуулга: Хамтарч ажиллаж буй банкууд" },
+        { time: "15:00 - 15:30", title: "Ногоон барилгын үнэлгээний гэрчилгээ /BestGer/", desc: "Илтгэгч: Ц.Батгэрэл (Ногоон барилгын хүрээлэн)" },
+        { time: "15:30 - 16:00", title: "BIPV - Барилгыг эрчим хүч үйлдвэрлэгч болгох технологи", desc: "Илтгэгч: С.Болорбайгаль (BIPV Glass технологийн сургагч)" },
+        { time: "16:00 - 16:30", title: "ХААЛТЫН ҮЙЛ АЖИЛЛАГАА", desc: "" },
+      ]
+    }
+  ];
 
   const lastScrollY = useRef(0);
   const bookingRef = useRef<HTMLElement>(null);
@@ -119,6 +170,8 @@ export default function App() {
       } else {
         setIsNavbarVisible(true);
       }
+
+      setIsScrolled(currentScrollY > 20);
       
       if (currentScrollY > 400) {
         setIsScrollTopVisible(true);
@@ -190,6 +243,7 @@ export default function App() {
   const navLinks = [
     { name: d.nav[0], href: '#' },
     { name: d.nav[1], href: '#companies' },
+    { name: 'ТӨСӨВ', href: '#estimator' },
     { name: d.nav[2], href: '#visitor', isVisitor: true },
     { name: d.nav[3], href: '#agenda' },
     { name: d.nav[4], href: '#contact' },
@@ -275,16 +329,30 @@ export default function App() {
     <div className="font-sans text-gray-900 bg-white min-h-screen selection:bg-emerald-200">
       {/* NavBar */}
       <nav 
-        className={`border-b border-white/5 bg-white/5 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full shadow-2xl shadow-black/40'}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isNavbarVisible ? 'translate-y-0' : '-translate-y-full shadow-2xl'
+        } ${
+          isScrolled 
+            ? 'bg-slate-900/90 border-b border-white/10 backdrop-blur-xl py-0 shadow-lg' 
+            : 'bg-transparent border-b border-transparent py-2'
+        }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isScrolled ? 'h-16 sm:h-20' : 'h-20 sm:h-24'} flex items-center justify-between`}>
           <div className="flex items-center gap-3 py-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="АМИНЫ ОРОН СУУЦ ЭКСПО 2026" className="h-14 sm:h-16 lg:h-20 w-auto" />
+            <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="АМИНЫ ОРОН СУУЦ ЭКСПО 2026" className={`transition-all duration-300 ${isScrolled ? 'h-12 sm:h-14 lg:h-16' : 'h-14 sm:h-16 lg:h-20'} w-auto`} />
           </div>
           
           {/* Desktop Menu */}
           <div className="hidden lg:flex flex-1 justify-center items-center gap-6 text-center">
              {navLinks.map((link, idx) => {
+               if (link.href === '#estimator') {
+                 return (
+                   <a key={idx} href={link.href} className="text-emerald-400 hover:text-emerald-300 font-bold text-sm transition-colors uppercase tracking-wide whitespace-nowrap flex items-center gap-1">
+                     <Calculator size={14} />
+                     {link.name}
+                   </a>
+                 );
+               }
                if (link.isVisitor) {
                  return (
                    <button key={idx} onClick={() => setIsVisitorModalOpen(true)} className="text-white/90 hover:text-white font-medium text-sm transition-colors uppercase tracking-wide cursor-pointer whitespace-nowrap">
@@ -341,6 +409,14 @@ export default function App() {
                 </select>
               </div>
               {navLinks.map((link, idx) => {
+                if (link.href === '#estimator') {
+                  return (
+                    <a key={idx} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className="text-emerald-400 block px-3 py-3 rounded-md text-base font-bold hover:bg-white/10 transition-colors uppercase tracking-wide text-center flex items-center justify-center gap-2">
+                       <Calculator size={18} />
+                       {link.name}
+                    </a>
+                  );
+                }
                 if (link.isVisitor) {
                   return (
                     <button key={idx} onClick={() => { setIsMobileMenuOpen(false); setIsVisitorModalOpen(true); }} className="text-white block w-full px-3 py-3 rounded-md text-base font-medium hover:bg-white/10 transition-colors uppercase tracking-wide text-center">
@@ -813,6 +889,9 @@ export default function App() {
         </div>
       </section>
 
+      {/* Budget Estimator Section */}
+      <BudgetEstimator />
+
       {/* Agenda Section */}
       <section id="agenda" className="py-24 bg-slate-50 scroll-mt-20 relative overflow-hidden">
         {/* Background elements */}
@@ -822,67 +901,92 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-space text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-4">
-              {d.agendaTitle}
+              Арга хэмжээний хөтөлбөр
             </h2>
             <p className="text-lg text-slate-600">
-              {d.agendaDesc}
+              Гурван өдрийн турш үргэлжлэх сонирхолтой илтгэл, хэлэлцүүлгүүдийн цагийн хуваарь
             </p>
           </div>
+
+          {/* Date Selector Tabs */}
+          <div className="flex flex-wrap justify-center gap-4 mb-16">
+            {AGENDA_DATA.map((day, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveAgendaDay(idx)}
+                className={`flex flex-col items-center px-8 py-4 rounded-3xl transition-all duration-300 ${
+                  activeAgendaDay === idx 
+                    ? 'bg-slate-900 text-white shadow-xl shadow-slate-200 scale-105' 
+                    : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">{day.date}</span>
+                <span className="text-lg font-bold font-space">{day.day}</span>
+              </button>
+            ))}
+          </div>
           
-          <div className="max-w-3xl mx-auto">
-            <div className="space-y-0 relative before:absolute before:inset-0 before:ml-[5.5rem] sm:before:ml-[8.5rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-              {(schedules.length > 0 ? schedules : [
-                { time: "09:00 - 10:00", title: "Бүртгэл болон хүлээн авалт", desc: "Үзэсгэлэнд оролцогчдын бүртгэл болон мандат олгох", id: "1" },
-                { time: "10:00 - 11:30", title: "Нээлтийн үйл ажиллагаа", desc: "Зохион байгуулагч болон албаны хүмүүсийн нээлтийн үг", id: "2" },
-                { time: "11:30 - 12:30", title: "Үзэсгэлэнтэй танилцах", desc: "Асар болон бүтээгдэхүүн, үйлчилгээтэй танилцах", id: "3" },
-                { time: "12:30 - 13:30", title: "Цайны цаг", desc: "Оролцогчид болон зочдод зориулсан хөнгөн зууш, нетворгинг", id: "4" },
-                { time: "13:30 - 15:30", title: "Салбар хуралдаан", desc: "Амины орон сууц, ногоон барилгын чиг хандлага сэдэвт хэлэлцүүлэг", id: "5" },
-                { time: "15:30 - 17:30", title: "B2B уулзалтууд", desc: "Худалдан авагч болон ханган нийлүүлэгчдийн ганцаарчилсан уулзалтууд", id: "6" },
-                { time: "18:00", title: "Тухайн өдрийн хаалт", desc: "", id: "7" },
-              ]).map((item: any, idx) => (
-                <div key={item.id} className="relative flex flex-col md:flex-row items-center justify-between md:justify-center group is-active py-4">
-                  
-                  {/* Mobile Dot */}
-                  <div className="md:hidden absolute left-[4.3rem] sm:left-[7.3rem] top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-100 group-hover:bg-emerald-500 group-hover:scale-110 text-slate-500 group-hover:text-white shrink-0 shadow-sm transition-all duration-300 z-10">
-                    <div className="w-2.5 h-2.5 rounded-full bg-current"></div>
+          <div className="max-w-4xl mx-auto">
+            <motion.div 
+              key={activeAgendaDay}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className={`p-6 rounded-[2.5rem] ${AGENDA_DATA[activeAgendaDay].color} bg-opacity-20 backdrop-blur-sm border-2 border-white mb-8 flex flex-col md:flex-row items-center justify-between gap-4`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 ${AGENDA_DATA[activeAgendaDay].color} rounded-full flex items-center justify-center text-white shadow-lg`}>
+                    <Calendar size={24} />
                   </div>
-
-                  {/* Desktop Dot */}
-                  <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-100 group-hover:bg-emerald-500 group-hover:scale-110 text-slate-500 group-hover:text-white shrink-0 shadow-sm transition-all duration-300 z-10">
-                    <div className="w-2.5 h-2.5 rounded-full bg-current"></div>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Өдрийн онцлох сэдэв</p>
+                    <h3 className="text-xl font-bold text-slate-900">{AGENDA_DATA[activeAgendaDay].title}</h3>
                   </div>
-
-                  {idx % 2 === 0 ? (
-                    <>
-                      <div className="w-full pl-[9rem] pr-4 sm:pl-[12rem] md:px-0 md:w-[calc(50%-3rem)] pb-4 md:pb-0 z-0">
-                        <div className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all md:text-right">
-                          <div className="flex flex-col gap-1 mb-2">
-                            <span className="font-space font-bold text-sm tracking-widest uppercase text-emerald-500 mb-1">{item.time} {item.date ? `(${item.date})` : ''}</span>
-                            <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
-                          </div>
-                          {(item.description || item.desc) && <p className="text-slate-600 leading-relaxed">{item.description || item.desc}</p>}
-                        </div>
-                      </div>
-                      <div className="hidden md:block md:w-[calc(50%-3rem)]"></div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="hidden md:block md:w-[calc(50%-3rem)]"></div>
-                      <div className="w-full pl-[9rem] pr-4 sm:pl-[12rem] md:px-0 md:w-[calc(50%-3rem)] pb-4 md:pb-0 z-0">
-                        <div className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all md:text-left">
-                          <div className="flex flex-col gap-1 mb-2">
-                            <span className="font-space font-bold text-sm tracking-widest uppercase text-emerald-500 mb-1">{item.time} {item.date ? `(${item.date})` : ''}</span>
-                            <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
-                          </div>
-                          {(item.description || item.desc) && <p className="text-slate-600 leading-relaxed">{item.description || item.desc}</p>}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
                 </div>
-              ))}
-            </div>
+                <div className="px-6 py-2 bg-white/50 rounded-full text-slate-800 font-bold text-sm">
+                  {AGENDA_DATA[activeAgendaDay].items.length} арга хэмжээ
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {AGENDA_DATA[activeAgendaDay].items.map((item, idx) => (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-100 transition-all duration-300"
+                  >
+                    <div className="flex flex-col min-w-[120px]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Clock size={14} className="text-emerald-500" />
+                        <span className="font-space font-bold text-slate-900 text-base">{item.time}</span>
+                      </div>
+                      <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="w-1/3 h-full bg-emerald-500 group-hover:w-full transition-all duration-700"></div>
+                      </div>
+                    </div>
+
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                        {item.title}
+                      </h4>
+                      {item.desc && (
+                        <p className="text-sm text-slate-500 leading-relaxed italic">
+                          {item.desc}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="hidden sm:flex self-center">
+                      <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
+                        <ArrowRight size={18} />
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
