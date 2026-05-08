@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db, auth, handleFirestoreError, OperationType } from './firebase';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { LogOut, Trash2, Home, Users, Building, Activity, ShieldAlert, UserPlus, ShieldCheck } from 'lucide-react';
+import { LogOut, Trash2, Home, Users, Building, Activity, ShieldAlert, UserPlus, ShieldCheck, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface AdminUser {
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
       }
     });
 
-    const schedulesQuery = query(collection(db, 'schedules'), orderBy('createdAt', 'desc'));
+    const schedulesQuery = query(collection(db, 'schedules'), orderBy('createdAt', 'asc'));
     const unsubscribeSchedules = onSnapshot(schedulesQuery, (snapshot) => {
       const data: Schedule[] = [];
       snapshot.forEach((doc) => {
@@ -820,7 +820,38 @@ export default function AdminDashboard() {
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {schedules.length === 0 ? (
-                          <tr><td colSpan={4} className="p-8 text-center text-slate-400">Хөтөлбөр байхгүй байна</td></tr>
+                          <tr><td colSpan={4} className="p-8 text-center text-slate-400">
+                            <p className="mb-4">Хөтөлбөр байхгүй байна</p>
+                            <button 
+                              onClick={async () => {
+                                const defaults = [
+                                  { time: "09:00 - 10:00", title: "Бүртгэл болон хүлээн авалт", description: "Үзэсгэлэнд оролцогчдын бүртгэл болон мандат олгох" },
+                                  { time: "10:00 - 11:30", title: "Нээлтийн үйл ажиллагаа", description: "Зохион байгуулагч болон албаны хүмүүсийн нээлтийн үг" },
+                                  { time: "11:30 - 12:30", title: "Үзэсгэлэнтэй танилцах", description: "Асар болон бүтээгдэхүүн, үйлчилгээтэй танилцах" },
+                                  { time: "12:30 - 13:30", title: "Цайны цаг", description: "Оролцогчид болон зочдод зориулсан хөнгөн зууш, нетворгинг" },
+                                  { time: "13:30 - 15:30", title: "Салбар хуралдаан", description: "Амины орон сууц, ногоон барилгын чиг хандлага сэдэвт хэлэлцүүлэг" },
+                                  { time: "15:30 - 17:30", title: "B2B уулзалтууд", description: "Худалдан авагч болон ханган нийлүүлэгчдийн ганцаарчилсан уулзалтууд" },
+                                  { time: "18:00", title: "Тухайн өдрийн хаалт", description: "" },
+                                ];
+                                try {
+                                  for (const item of defaults) {
+                                    await setDoc(doc(collection(db, 'schedules')), {
+                                      date: '',
+                                      time: item.time,
+                                      title: item.title,
+                                      description: item.description,
+                                      createdAt: serverTimestamp()
+                                    });
+                                  }
+                                } catch (error) {
+                                  handleFirestoreError(error, OperationType.WRITE, 'schedules');
+                                }
+                              }}
+                              className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg font-medium transition-colors"
+                            >
+                              Үндсэн хөтөлбөрийг ачаалах
+                            </button>
+                          </td></tr>
                         ) : (
                           schedules.map((schedule) => (
                             <tr key={schedule.id} className="hover:bg-slate-50/50 transition-colors">
