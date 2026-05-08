@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { db, auth, handleFirestoreError, OperationType } from './firebase';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from 'firebase/auth';
@@ -374,6 +374,16 @@ export default function AdminDashboard() {
     return new Date(timestamp).toLocaleString('mn-MN');
   };
 
+  const todayPageViews = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return pageViews.filter(view => {
+      if (!view.createdAt) return false;
+      const viewDate = (view.createdAt as any)?.toDate ? (view.createdAt as any).toDate() : new Date(view.createdAt as any);
+      return viewDate >= today;
+    }).length;
+  }, [pageViews]);
+
   if (authChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -477,8 +487,8 @@ export default function AdminDashboard() {
                   <Activity className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Нийт бүртгэл</p>
-                  <p className="text-3xl font-bold text-slate-900">{boothBookings.length + visitorRegistrations.length}</p>
+                  <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Өнөөдрийн хандалт</p>
+                  <p className="text-3xl font-bold text-slate-900">{todayPageViews}</p>
                 </div>
               </div>
             </div>
