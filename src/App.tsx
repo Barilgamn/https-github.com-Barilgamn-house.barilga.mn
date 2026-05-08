@@ -269,9 +269,24 @@ export default function App() {
   }, [exhibitors]);
 
   const bookedBooths = React.useMemo(() => {
+    // List of booths explicitly defined as AVAILABLE by the user
+    const availableBooths = [
+      'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10',
+      'A23', 'A25', 'A26',
+      'A43', 'A44', 'A45', 'A46', 'A47', 'A48',
+      'A53', 'A54', 'A55', 'A56', 'A57', 'A58',
+      'A63', 'A64', 'A65', 'A66',
+      'A76', 'A77', 'A78',
+      'A84', 'A85', 'A86', 'A87', 'A88'
+    ];
+
+    const allABooths = Array.from({length: 90}, (_, i) => `A${i+1}`);
+    const mandatoryBooked = allABooths.filter(b => !availableBooths.includes(b));
+    
     const list = allExhibitors.map(e => e.booth.split(',').map((b: string) => b.trim())).flat();
     const pendingList = pendingBookings.map(p => p.boothId);
-    return Array.from(new Set([...list, ...pendingList]));
+    
+    return Array.from(new Set([...list, ...pendingList, ...mandatoryBooked]));
   }, [allExhibitors, pendingBookings]);
   
   const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
@@ -765,17 +780,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Outdoor Section */}
-              <div className="mt-16 w-full flex flex-col items-center">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px w-24 bg-slate-200"></div>
-                  <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">ЗАДГАЙ ТАЛБАЙ (OUTDOOR)</span>
-                  <div className="h-px w-24 bg-slate-200"></div>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2 max-w-[800px]">
-                  {Array.from({length: 32}, (_, i) => `Z${i+1}`).map(renderBooth)}
-                </div>
-              </div>
+              {/* Outdoor Section Removed as requested */}
 
             </div>
           </div>
