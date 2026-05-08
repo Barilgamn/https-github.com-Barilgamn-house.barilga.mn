@@ -67,8 +67,10 @@ export default function AdminDashboard() {
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [newExhibitor, setNewExhibitor] = useState({ name: '', activity: '', booth: '', isPaid: false });
   const [editingExhibitor, setEditingExhibitor] = useState<Exhibitor | null>(null);
+  const [isAddingExhibitor, setIsAddingExhibitor] = useState(false);
   const [newSchedule, setNewSchedule] = useState({ date: '', time: '', title: '', description: '' });
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
+  const [isAddingSchedule, setIsAddingSchedule] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authChecking, setAuthChecking] = useState(true);
   const [authError, setAuthError] = useState<string>('');
@@ -253,6 +255,7 @@ export default function AdminDashboard() {
         });
       }
       setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
+      setIsAddingExhibitor(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
     }
@@ -304,6 +307,7 @@ export default function AdminDashboard() {
         });
       }
       setNewSchedule({ date: '', time: '', title: '', description: '' });
+      setIsAddingSchedule(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'schedules');
     }
@@ -651,73 +655,105 @@ export default function AdminDashboard() {
 
                 {activeTab === 'exhibitors' && (
                   <div className="p-6">
-                    <form onSubmit={handleAddExhibitor} className="mb-8 grid grid-cols-1 md:grid-cols-5 gap-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Байгууллагын нэр</label>
-                        <input
-                          type="text"
-                          value={newExhibitor.name}
-                          onChange={(e) => setNewExhibitor({...newExhibitor, name: e.target.value})}
-                          placeholder="Монкабель ХХК"
-                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                          required
-                        />
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-lg font-bold text-slate-800">Оролцогч байгууллагууд</h3>
+                      <button 
+                        onClick={() => setIsAddingExhibitor(true)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg flex items-center transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        Шинэ байгууллага
+                      </button>
+                    </div>
+
+                    {/* Exhibitor Modal */}
+                    {(editingExhibitor || isAddingExhibitor) && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-slate-800">{editingExhibitor ? 'Байгууллага засах' : 'Байгууллага нэмэх'}</h3>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingExhibitor(null);
+                                setIsAddingExhibitor(false);
+                                setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
+                              }}
+                              className="text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                          </div>
+                          
+                          <form onSubmit={handleAddExhibitor} className="p-6 space-y-4">
+                            <div>
+                              <label className="block text-sm font-bold text-slate-700 mb-1.5">Байгууллагын нэр</label>
+                              <input
+                                type="text"
+                                value={newExhibitor.name}
+                                onChange={(e) => setNewExhibitor({...newExhibitor, name: e.target.value})}
+                                placeholder="Монкабель ХХК"
+                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-bold text-slate-700 mb-1.5">Үйл ажиллагааны чиглэл</label>
+                              <input
+                                type="text"
+                                value={newExhibitor.activity}
+                                onChange={(e) => setNewExhibitor({...newExhibitor, activity: e.target.value})}
+                                placeholder="Цахилгаан, холбоо"
+                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-bold text-slate-700 mb-1.5">Талбай (таслалаар зааж болно)</label>
+                              <input
+                                type="text"
+                                value={newExhibitor.booth}
+                                onChange={(e) => setNewExhibitor({...newExhibitor, booth: e.target.value})}
+                                placeholder="A12, A13"
+                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                required
+                              />
+                            </div>
+                            <div className="flex items-center gap-3 pt-2">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={newExhibitor.isPaid}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, isPaid: e.target.checked})}
+                                  className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                                />
+                                <span className="text-sm font-bold text-slate-700">Төлбөр төлсөн эсэх</span>
+                              </label>
+                            </div>
+                            
+                            <div className="pt-4 flex gap-3">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingExhibitor(null);
+                                  setIsAddingExhibitor(false);
+                                  setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
+                                }}
+                                className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-bold transition-colors"
+                              >
+                                Цуцлах
+                              </button>
+                              <button
+                                type="submit"
+                                className="flex-1 px-4 py-2.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold transition-colors"
+                              >
+                                {editingExhibitor ? 'Хадгалах' : 'Нэмэх'}
+                              </button>
+                            </div>
+                          </form>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Үйл ажиллагааны чиглэл</label>
-                        <input
-                          type="text"
-                          value={newExhibitor.activity}
-                          onChange={(e) => setNewExhibitor({...newExhibitor, activity: e.target.value})}
-                          placeholder="Цахилгаан, холбоо"
-                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Талбай (таслалаар зааж болно)</label>
-                        <input
-                          type="text"
-                          value={newExhibitor.booth}
-                          onChange={(e) => setNewExhibitor({...newExhibitor, booth: e.target.value})}
-                          placeholder="A12, A13"
-                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Төлбөр</label>
-                        <label className="flex items-center gap-2 cursor-pointer h-full pb-1">
-                          <input
-                            type="checkbox"
-                            checked={newExhibitor.isPaid}
-                            onChange={(e) => setNewExhibitor({...newExhibitor, isPaid: e.target.checked})}
-                            className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
-                          />
-                          <span className="text-sm font-medium text-slate-700">Төлсөн</span>
-                        </label>
-                      </div>
-                      <div className="flex items-end gap-2">
-                        <button 
-                          type="submit"
-                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap h-[46px]"
-                        >
-                          {editingExhibitor ? 'Хадгалах' : 'Нэмэх'}
-                        </button>
-                        {editingExhibitor && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingExhibitor(null);
-                              setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
-                            }}
-                            className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap h-[46px]"
-                          >
-                            Цуцлах
-                          </button>
-                        )}
-                      </div>
-                    </form>
+                    )}
 
                     <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden border border-slate-100">
                       <thead>
@@ -854,71 +890,104 @@ export default function AdminDashboard() {
                 )}
                 {activeTab === 'schedules' && (
                   <div className="p-6">
-                    <form onSubmit={handleSaveSchedule} className="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
-                      <h4 className="text-sm font-bold text-slate-700 mb-4">{editingSchedule ? 'Хөтөлбөр засах' : 'Шинэ хөтөлбөр нэмэх'}</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                        <div>
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Огноо</label>
-                          <input
-                            type="text"
-                            value={newSchedule.date}
-                            onChange={(e) => setNewSchedule({...newSchedule, date: e.target.value})}
-                            placeholder="5 сарын 25"
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Цаг</label>
-                          <input
-                            type="text"
-                            value={newSchedule.time}
-                            onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})}
-                            placeholder="14:00 - 15:00"
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                            required
-                          />
-                        </div>
-                        <div className="lg:col-span-2">
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Гарчиг</label>
-                          <input
-                            type="text"
-                            value={newSchedule.title}
-                            onChange={(e) => setNewSchedule({...newSchedule, title: e.target.value})}
-                            placeholder="Нээлтийн үйл ажиллагаа"
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                            required
-                          />
-                        </div>
-                        <div className="lg:col-span-4">
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Дэлгэрэнгүй (заавал биш)</label>
-                          <textarea
-                            value={newSchedule.description}
-                            onChange={(e) => setNewSchedule({...newSchedule, description: e.target.value})}
-                            placeholder="Илтгэгч болон бусад мэдээлэл"
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all resize-y min-h-[60px]"
-                            rows={2}
-                          />
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-lg font-bold text-slate-800">Хөтөлбөрүүд</h3>
+                      <button 
+                        onClick={() => setIsAddingSchedule(true)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg flex items-center transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        Шинэ хөтөлбөр
+                      </button>
+                    </div>
+
+                    {(editingSchedule || isAddingSchedule) && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
+                          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-slate-800">{editingSchedule ? 'Хөтөлбөр засах' : 'Шинэ хөтөлбөр нэмэх'}</h3>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingSchedule(null);
+                                setIsAddingSchedule(false);
+                                setNewSchedule({ date: '', time: '', title: '', description: '' });
+                              }}
+                              className="text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                          </div>
+                      
+                          <form onSubmit={handleSaveSchedule} className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Огноо</label>
+                                <input
+                                  type="text"
+                                  value={newSchedule.date}
+                                  onChange={(e) => setNewSchedule({...newSchedule, date: e.target.value})}
+                                  placeholder="5 сарын 25"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Цаг</label>
+                                <input
+                                  type="text"
+                                  value={newSchedule.time}
+                                  onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})}
+                                  placeholder="14:00 - 15:00"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                  required
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Гарчиг</label>
+                                <input
+                                  type="text"
+                                  value={newSchedule.title}
+                                  onChange={(e) => setNewSchedule({...newSchedule, title: e.target.value})}
+                                  placeholder="Нээлтийн үйл ажиллагаа"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                  required
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Дэлгэрэнгүй (заавал биш)</label>
+                                <textarea
+                                  value={newSchedule.description}
+                                  onChange={(e) => setNewSchedule({...newSchedule, description: e.target.value})}
+                                  placeholder="Илтгэгч болон бусад мэдээлэл"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all resize-y min-h-[80px]"
+                                  rows={3}
+                                />
+                              </div>
+                            </div>
+                            <div className="pt-2 flex justify-end gap-3">
+                              <button 
+                                type="button"
+                                onClick={() => { 
+                                  setEditingSchedule(null); 
+                                  setIsAddingSchedule(false);
+                                  setNewSchedule({ date: '', time: '', title: '', description: '' }); 
+                                }}
+                                className="px-6 py-2.5 font-bold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                              >
+                                Цуцлах
+                              </button>
+                              <button 
+                                type="submit"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors"
+                              >
+                                {editingSchedule ? 'Хадгалах' : 'Нэмэх'}
+                              </button>
+                            </div>
+                          </form>
                         </div>
                       </div>
-                      <div className="flex justify-end gap-3">
-                        {editingSchedule && (
-                          <button 
-                            type="button"
-                            onClick={() => { setEditingSchedule(null); setNewSchedule({ date: '', time: '', title: '', description: '' }); }}
-                            className="px-4 py-2 font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
-                          >
-                            Цуцлах
-                          </button>
-                        )}
-                        <button 
-                          type="submit"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-                        >
-                          {editingSchedule ? 'Хадгалах' : 'Нэмэх'}
-                        </button>
-                      </div>
-                    </form>
+                    )}
 
                     <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden border border-slate-100">
                       <thead>
