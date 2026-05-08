@@ -113,6 +113,7 @@ export default function App() {
   React.useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         setIsNavbarVisible(false);
       } else {
@@ -273,7 +274,9 @@ export default function App() {
   return (
     <div className="font-sans text-gray-900 bg-white min-h-screen selection:bg-emerald-200">
       {/* NavBar */}
-      <nav className={`border-b border-white/10 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 shadow-lg shadow-black/5 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+      <nav 
+        className={`border-b border-white/5 bg-white/5 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full shadow-2xl shadow-black/40'}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
           <div className="flex items-center gap-3 py-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src="https://www.barilga.mn/files/aa08e06d18a7412eb59bb69e4ef6fe29.png?d=0" alt="АМИНЫ ОРОН СУУЦ ЭКСПО 2026" className="h-14 sm:h-16 lg:h-20 w-auto" />
@@ -301,7 +304,7 @@ export default function App() {
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as Lang)}
-              className="bg-slate-800 text-white border border-slate-700 rounded-md px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer backdrop-blur-md transition-all sm:w-auto"
             >
               <option value="mn">MN</option>
               <option value="en">EN</option>
@@ -323,13 +326,13 @@ export default function App() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-slate-950 border-t border-slate-800 shadow-inner">
+          <div className="lg:hidden bg-black/40 backdrop-blur-2xl border-t border-white/10 shadow-2xl">
             <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
               <div className="flex justify-end px-3 pb-2 mt-2">
                 <select
                   value={lang}
                   onChange={(e) => setLang(e.target.value as Lang)}
-                  className="bg-slate-800 text-white border border-slate-700 rounded-md px-2 py-1 outline-none text-sm"
+                  className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-1.5 outline-none text-sm focus:ring-2 focus:ring-emerald-500 backdrop-blur-md"
                 >
                   <option value="mn">Mongolian</option>
                   <option value="en">English</option>
@@ -362,31 +365,39 @@ export default function App() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative w-full bg-[#f8fafc] py-28 sm:py-36 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
-        {/* Animated Background Orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-32 left-1/2 w-96 h-96 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-        
-        <div className="absolute inset-0 z-0 opacity-[0.03]" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }} />
+      <section className="relative w-full bg-slate-900 py-32 sm:py-44 flex flex-col items-center justify-center text-center px-4 overflow-hidden min-h-[85vh]">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.homify.com/v1438618117/p/photo/image/792115/HUF_Haus_ART_5_Au%C3%9Fenansicht_3.jpg" 
+            alt="Modern Luxury House" 
+            className="w-full h-full object-cover opacity-60"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/70" />
+        </div>
+
+        {/* Animated Background Orbs (Subtle on image) */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-32 left-1/2 w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="relative z-10 max-w-5xl mx-auto flex flex-col items-center">
           <motion.span 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold mb-8 tracking-wide shadow-sm"
+            className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-emerald-500/10 backdrop-blur-md border border-emerald-500/30 text-emerald-300 text-sm font-semibold mb-8 tracking-wide shadow-xl"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
             {d.heroBadge}
           </motion.span>
-          <h1 className="font-space text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 mb-8 leading-[1.1] text-center flex flex-row justify-center items-center flex-wrap gap-x-3 sm:gap-x-4">
-            <span>{d.heroTitle1}</span> <span className="text-amber-500 relative inline-block">
+          <h1 className="font-space text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-[1.1] text-center flex flex-row justify-center items-center flex-wrap gap-x-3 sm:gap-x-4 drop-shadow-2xl">
+            <span>{d.heroTitle1}</span> <span className="text-amber-400 relative inline-block">
               {d.heroTitle2}
-              <svg className="absolute w-full h-3 -bottom-1 left-0 text-amber-300 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 10 L 0 10 Z" fill="currentColor" opacity="0.5"></path></svg>
+              <svg className="absolute w-full h-3 -bottom-1 left-0 text-amber-400/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 10 L 0 10 Z" fill="currentColor" opacity="0.8"></path></svg>
             </span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-slate-600 mb-12 max-w-3xl leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl text-slate-100 mb-12 max-w-3xl leading-relaxed drop-shadow-lg font-medium opacity-90">
             {d.heroDesc}
           </p>
 
@@ -420,14 +431,14 @@ export default function App() {
             </span>
           </motion.div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 mb-12 text-slate-700 font-medium bg-white p-4 sm:px-6 rounded-2xl shadow-sm border border-emerald-100/50">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 mb-12 text-white font-semibold bg-white/10 backdrop-blur-md p-4 sm:px-8 rounded-2xl shadow-2xl border border-white/20">
             <div className="flex items-center gap-2.5">
-              <Calendar className="w-5 h-5 text-emerald-600" />
+              <Calendar className="w-5 h-5 text-emerald-400" />
               <span>2026.05.15 &ndash; 05.17</span>
             </div>
-            <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-slate-300" />
+            <div className="hidden sm:block w-2 h-2 rounded-full bg-amber-400/50" />
             <div className="flex items-center gap-2.5">
-              <MapPin className="w-5 h-5 text-emerald-600" />
+              <MapPin className="w-5 h-5 text-emerald-400" />
               <span>&quot;Барилгачин&quot; худалдааны төв</span>
             </div>
           </div>
@@ -441,20 +452,20 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mt-16 w-full max-w-4xl"
+            className="mt-20 w-full max-w-4xl"
           >
-            <h3 className="font-space text-slate-500 font-bold uppercase tracking-widest mb-6 text-sm sm:text-base">{d.countdownTitle}</h3>
-            <div className="flex justify-center gap-3 sm:gap-6 text-slate-800">
+            <h3 className="font-space text-emerald-400/90 font-bold uppercase tracking-[0.2em] mb-8 text-sm sm:text-base drop-shadow-md">{d.countdownTitle}</h3>
+            <div className="flex justify-center gap-3 sm:gap-6 text-white">
               {[
                 { value: timeLeft.days, label: d.time[0] },
                 { value: timeLeft.hours, label: d.time[1] },
                 { value: timeLeft.minutes, label: d.time[2] },
                 { value: timeLeft.seconds, label: d.time[3] }
               ].map((timeData, index) => (
-                <div key={index} className="flex flex-col items-center bg-white p-4 sm:p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 min-w-[5rem] sm:min-w-[6rem] md:min-w-[7rem] relative overflow-hidden group">
-                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-                  <span className="font-space text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-600 mb-1">{timeData.value}</span>
-                  <span className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">{timeData.label}</span>
+                <div key={index} className="flex flex-col items-center bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-[2rem] shadow-2xl border border-white/10 min-w-[5.5rem] sm:min-w-[6.5rem] md:min-w-[7.5rem] relative overflow-hidden group transition-all hover:bg-white/15 hover:border-white/20">
+                  <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-emerald-400 to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                  <span className="font-space text-3xl sm:text-4xl md:text-5xl font-bold mb-1 drop-shadow-lg">{timeData.value}</span>
+                  <span className="text-[10px] sm:text-xs text-emerald-300 font-bold uppercase tracking-widest opacity-80">{timeData.label}</span>
                 </div>
               ))}
             </div>
