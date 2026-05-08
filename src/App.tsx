@@ -39,6 +39,7 @@ export default function App() {
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
+  const [pendingBookings, setPendingBookings] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [activeAgendaDay, setActiveAgendaDay] = useState(0);
 
@@ -121,7 +122,18 @@ export default function App() {
       console.error("Failed to load schedules:", error);
     });
 
-    return () => { unsubscribeExh(); unsubscribeSch(); };
+    const qPending = query(collection(db, 'booth_bookings'));
+    const unsubscribePending = onSnapshot(qPending, (snapshot) => {
+      const data: any[] = [];
+      snapshot.forEach(doc => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      setPendingBookings(data);
+    }, (error) => {
+      console.error("Failed to load bookings:", error);
+    });
+
+    return () => { unsubscribeExh(); unsubscribeSch(); unsubscribePending(); };
   }, []);
 
   // Connection Test & Page View Tracking
@@ -239,8 +251,28 @@ export default function App() {
     { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "Z3" }
   ];
 
-  const allExhibitors = exhibitors.length > 0 ? exhibitors : hardcodedExhibitors;
-  const bookedBooths = allExhibitors.map(e => e.booth.split(',').map(b => b.trim())).flat();
+  const allExhibitors = React.useMemo(() => {
+    // Start with hardcoded list
+    const combined = [...hardcodedExhibitors] as any[];
+    
+    // Add Firestore ones if they are not already there (by booth)
+    exhibitors.forEach(exh => {
+      const existingIdx = combined.findIndex(c => c.booth === exh.booth);
+      if (existingIdx >= 0) {
+        combined[existingIdx] = { ...combined[existingIdx], ...exh };
+      } else {
+        combined.push(exh);
+      }
+    });
+    
+    return combined;
+  }, [exhibitors]);
+
+  const bookedBooths = React.useMemo(() => {
+    const list = allExhibitors.map(e => e.booth.split(',').map((b: string) => b.trim())).flat();
+    const pendingList = pendingBookings.map(p => p.boothId);
+    return Array.from(new Set([...list, ...pendingList]));
+  }, [allExhibitors, pendingBookings]);
   
   const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
 

@@ -861,16 +861,18 @@ export default function AdminDashboard() {
                             
                             try {
                               for (const item of defaults) {
-                                await setDoc(doc(collection(db, 'exhibitors')), {
+                                // Simplified ID to prevent duplicates
+                                const boothId = item.booth.trim().replace(/[^a-zA-Z0-9]/g, '_');
+                                await setDoc(doc(db, 'exhibitors', boothId), {
                                   name: item.name,
                                   activity: item.activity,
                                   booth: item.booth,
                                   email: 'info@barilga.mn',
                                   status: 'paid',
                                   createdAt: serverTimestamp()
-                                });
+                                }, { merge: true });
                               }
-                              alert("Амжилттай нэмэгдлээ.");
+                              alert("Амжилттай нэмэгдэж, шинэчлэгдлээ.");
                             } catch (error) {
                               handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
                             }
