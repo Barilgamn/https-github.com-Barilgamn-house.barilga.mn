@@ -326,7 +326,7 @@ export default function App() {
   };
 
   return (
-    <div className="font-sans text-gray-900 bg-white min-h-screen selection:bg-emerald-200">
+    <div className="font-sans text-gray-900 bg-white min-h-screen selection:bg-emerald-200 overflow-x-hidden">
       {/* NavBar */}
       <nav 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -372,12 +372,13 @@ export default function App() {
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as Lang)}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer backdrop-blur-md transition-all sm:w-auto"
+              className="bg-slate-800/80 hover:bg-slate-700/80 text-white border border-white/20 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer backdrop-blur-md transition-all sm:w-auto appearance-none pr-8 relative"
+              style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'white\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.25rem' }}
             >
-              <option value="mn">MN</option>
-              <option value="en">EN</option>
-              <option value="cn">CN</option>
-              <option value="ru">RU</option>
+              <option value="mn" className="bg-slate-900 text-white">MN</option>
+              <option value="en" className="bg-slate-900 text-white">EN</option>
+              <option value="cn" className="bg-slate-900 text-white">CN</option>
+              <option value="ru" className="bg-slate-900 text-white">RU</option>
             </select>
             <button onClick={scrollToBooking} className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 flex items-center justify-center rounded-lg font-bold transition-colors text-sm shadow-sm active:scale-95 whitespace-nowrap">
               {d.bookBtn}
@@ -400,12 +401,12 @@ export default function App() {
                 <select
                   value={lang}
                   onChange={(e) => setLang(e.target.value as Lang)}
-                  className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-1.5 outline-none text-sm focus:ring-2 focus:ring-emerald-500 backdrop-blur-md"
+                  className="bg-slate-800/80 text-white border border-white/20 rounded-lg px-4 py-2.5 outline-none text-sm focus:ring-2 focus:ring-emerald-500 backdrop-blur-md appearance-none w-full text-center"
                 >
-                  <option value="mn">Mongolian</option>
-                  <option value="en">English</option>
-                  <option value="cn">Chinese</option>
-                  <option value="ru">Russian</option>
+                  <option value="mn" className="bg-slate-900 text-white">Mongolian (MN)</option>
+                  <option value="en" className="bg-slate-900 text-white">English (EN)</option>
+                  <option value="cn" className="bg-slate-900 text-white">Chinese (CN)</option>
+                  <option value="ru" className="bg-slate-900 text-white">Russian (RU)</option>
                 </select>
               </div>
               {navLinks.map((link, idx) => {
@@ -467,13 +468,14 @@ export default function App() {
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
             {d.heroBadge}
           </motion.span>
-          <h1 className="font-space text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-[1.1] text-center flex flex-row justify-center items-center flex-wrap gap-x-3 sm:gap-x-4 drop-shadow-2xl">
-            <span>{d.heroTitle1}</span> <span className="text-amber-400 relative inline-block">
+          <h1 className="font-space text-2xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-tight sm:leading-[1.1] text-center drop-shadow-2xl px-2">
+            <span className="block sm:inline">{d.heroTitle1}</span>{' '}
+            <span className="text-amber-400 relative inline-block">
               {d.heroTitle2}
-              <svg className="absolute w-full h-3 -bottom-1 left-0 text-amber-400/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 10 L 0 10 Z" fill="currentColor" opacity="0.8"></path></svg>
+              <svg className="absolute w-full h-1.5 sm:h-3 -bottom-1 left-0 text-amber-400/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 10 L 0 10 Z" fill="currentColor" opacity="0.8"></path></svg>
             </span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-slate-100 mb-12 max-w-3xl leading-relaxed drop-shadow-lg font-medium opacity-90">
+          <p className="text-sm sm:text-lg md:text-2xl text-slate-100 mb-12 max-w-2xl leading-relaxed drop-shadow-lg font-medium opacity-90 px-4">
             {d.heroDesc}
           </p>
 
@@ -531,17 +533,17 @@ export default function App() {
             className="mt-20 w-full max-w-4xl"
           >
             <h3 className="font-space text-emerald-400/90 font-bold uppercase tracking-[0.2em] mb-8 text-sm sm:text-base drop-shadow-md">{d.countdownTitle}</h3>
-            <div className="flex justify-center gap-3 sm:gap-6 text-white">
+            <div className="flex justify-center gap-2 sm:gap-6 text-white px-2">
               {[
                 { value: timeLeft.days, label: d.time[0] },
                 { value: timeLeft.hours, label: d.time[1] },
                 { value: timeLeft.minutes, label: d.time[2] },
                 { value: timeLeft.seconds, label: d.time[3] }
               ].map((timeData, index) => (
-                <div key={index} className="flex flex-col items-center bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-[2rem] shadow-2xl border border-white/10 min-w-[5.5rem] sm:min-w-[6.5rem] md:min-w-[7.5rem] relative overflow-hidden group transition-all hover:bg-white/15 hover:border-white/20">
-                  <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-emerald-400 to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                  <span className="font-space text-3xl sm:text-4xl md:text-5xl font-bold mb-1 drop-shadow-lg">{timeData.value}</span>
-                  <span className="text-[10px] sm:text-xs text-emerald-300 font-bold uppercase tracking-widest opacity-80">{timeData.label}</span>
+                <div key={index} className="flex flex-col items-center bg-white/5 backdrop-blur-lg p-2 sm:p-6 rounded-2xl sm:rounded-[2rem] shadow-2xl border border-white/10 min-w-[4.5rem] sm:min-w-[6.5rem] md:min-w-[7.5rem] relative overflow-hidden group transition-all hover:bg-white/15">
+                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                  <span className="font-space text-2xl sm:text-4xl md:text-5xl font-bold mb-0.5 sm:mb-1 drop-shadow-lg">{timeData.value}</span>
+                  <span className="text-[8px] sm:text-xs text-emerald-300 font-bold uppercase tracking-[0.1em] sm:tracking-widest opacity-80">{timeData.label}</span>
                 </div>
               ))}
             </div>
