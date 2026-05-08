@@ -208,26 +208,35 @@ export default function App() {
   }, []);
 
   const hardcodedExhibitors = [
+    { name: "Урта Камел Транс ХХК", activity: "Тээвэр зууч", booth: "A13" },
     { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
     { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
     { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
-    { name: "Централ Рич Монголиа ХХК", activity: "Барилгын материал", booth: "A20" },
-    { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
-    { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
-    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын тоног төхөөрөмж", booth: "A31, A71" },
-    { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц, хаус барилга", booth: "A33" },
+    { name: "Централ Рич Монголиа ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A20" },
+    { name: "Тэнгэр уул трэйд ХХК", activity: "Барилга угсралт", booth: "A24" },
+    { name: "ХАДХАН ВИШН ХХК", activity: "Барилга угсралт", booth: "A27" },
+    { name: "ТЕРМИГАС ИМПИАНТИ ТЕХНОЛОГИ ХХК", activity: "Инженерийн шийдэл", booth: "A28" },
+    { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A29" },
+    { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A30" },
+    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "АОС төсөл", booth: "A31" },
+    { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц", booth: "A33" },
     { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
     { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
-    { name: "АГЛУТ ХХК", activity: "Инжинер, төсөл", booth: "A36" },
+    { name: "АГЛУТ ХХК", activity: "Инженер, төсөл", booth: "A36" },
     { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
-    { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД ХХК", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
+    { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
     { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
-    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69, A81" },
-    { name: "ЭС ЭН ДИ ХХК", activity: "Барилга угсралт", booth: "A73" },
-    { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Цахилгаан, гэрэлтүүлэг", booth: "A75" },
-    { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "ЗАДГАЙ 1" },
-    { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "ЗАДГАЙ 2" },
-    { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
+    { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A60" },
+    { name: "МАЙМОНСООРС ХХК", activity: "Барилга угсралт", booth: "A67" },
+    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69" },
+    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын Материал", booth: "A71" },
+    { name: "ЭС ЭН ДИ ХХК", activity: "Барилгын Материал", booth: "A73" },
+    { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Барилгын материал", booth: "A75" },
+    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A81" },
+    { name: "Манада ХХК", activity: "Барилгын материал", booth: "A83" },
+    { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "Z1" },
+    { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "Z2" },
+    { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "Z3" }
   ];
 
   const allExhibitors = exhibitors.length > 0 ? exhibitors : hardcodedExhibitors;
@@ -721,6 +730,18 @@ export default function App() {
                     </div>
                   </div>
                   <span className="text-xs text-slate-500 mt-1">Барилгын тоног төхөөрөмж</span>
+                </div>
+              </div>
+
+              {/* Outdoor Section */}
+              <div className="mt-16 w-full flex flex-col items-center">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-px w-24 bg-slate-200"></div>
+                  <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">ЗАДГАЙ ТАЛБАЙ (OUTDOOR)</span>
+                  <div className="h-px w-24 bg-slate-200"></div>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2 max-w-[800px]">
+                  {Array.from({length: 32}, (_, i) => `Z${i+1}`).map(renderBooth)}
                 </div>
               </div>
 
