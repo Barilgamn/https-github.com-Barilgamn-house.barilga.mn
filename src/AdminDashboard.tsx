@@ -65,6 +65,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'booths' | 'exhibitors' | 'visitors' | 'admins' | 'schedules' | 'analytics'>('booths');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [newExhibitor, setNewExhibitor] = useState({ name: '', activity: '', booth: '' });
+  const [editingExhibitor, setEditingExhibitor] = useState<Exhibitor | null>(null);
   const [newSchedule, setNewSchedule] = useState({ date: '', time: '', title: '', description: '' });
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
   const [loading, setLoading] = useState(true);
@@ -232,17 +233,35 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const dbRef = collection(db, 'exhibitors');
-      await setDoc(doc(dbRef), {
-         name: newExhibitor.name,
-         activity: newExhibitor.activity,
-         booth: newExhibitor.booth,
-         createdAt: serverTimestamp()
-      });
+      if (editingExhibitor) {
+        await updateDoc(doc(db, 'exhibitors', editingExhibitor.id), {
+          name: newExhibitor.name,
+          activity: newExhibitor.activity,
+          booth: newExhibitor.booth
+        });
+        setEditingExhibitor(null);
+      } else {
+        const dbRef = collection(db, 'exhibitors');
+        await setDoc(doc(dbRef), {
+           name: newExhibitor.name,
+           activity: newExhibitor.activity,
+           booth: newExhibitor.booth,
+           createdAt: serverTimestamp()
+        });
+      }
       setNewExhibitor({ name: '', activity: '', booth: '' });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
     }
+  };
+
+  const editExhibitor = (exhibitor: Exhibitor) => {
+    setEditingExhibitor(exhibitor);
+    setNewExhibitor({
+      name: exhibitor.name,
+      activity: exhibitor.activity,
+      booth: exhibitor.booth
+    });
   };
 
   const handleDeleteExhibitor = async (id: string) => {
@@ -662,13 +681,25 @@ export default function AdminDashboard() {
                           required
                         />
                       </div>
-                      <div className="flex items-end">
+                      <div className="flex items-end gap-2">
                         <button 
                           type="submit"
                           className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap h-[46px]"
                         >
-                          Нэмэх
+                          {editingExhibitor ? 'Хадгалах' : 'Нэмэх'}
                         </button>
+                        {editingExhibitor && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingExhibitor(null);
+                              setNewExhibitor({ name: '', activity: '', booth: '' });
+                            }}
+                            className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap h-[46px]"
+                          >
+                            Цуцлах
+                          </button>
+                        )}
                       </div>
                     </form>
 
@@ -679,12 +710,55 @@ export default function AdminDashboard() {
                           <th className="p-4 font-semibold">Компани</th>
                           <th className="p-4 font-semibold">Үйл ажиллагаа</th>
                           <th className="p-4 font-semibold text-center bg-emerald-50/30">Талбай</th>
-                          <th className="p-4 font-semibold w-16 text-center">Үйлдэл</th>
+                          <th className="p-4 font-semibold w-24 text-center">Үйлдэл</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {exhibitors.length === 0 ? (
-                          <tr><td colSpan={5} className="p-8 text-center text-slate-400">Мэдээлэл олдсонгүй</td></tr>
+                          <tr><td colSpan={5} className="p-8 text-center text-slate-400">
+                            <p className="mb-4">Мэдээлэл олдсонгүй</p>
+                            <button 
+                              onClick={async () => {
+                                const defaults = [
+                                  { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
+                                  { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
+                                  { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
+                                  { name: "Централ Рич Монголиа ХХК", activity: "Барилгын материал", booth: "A20" },
+                                  { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
+                                  { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
+                                  { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын тоног төхөөрөмж", booth: "A31, A71" },
+                                  { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц, хаус барилга", booth: "A33" },
+                                  { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
+                                  { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
+                                  { name: "АГЛУТ ХХК", activity: "Инжинер, төсөл", booth: "A36" },
+                                  { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
+                                  { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД ХХК", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
+                                  { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
+                                  { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69, A81" },
+                                  { name: "ЭС ЭН ДИ ХХК", activity: "Барилга угсралт", booth: "A73" },
+                                  { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Цахилгаан, гэрэлтүүлэг", booth: "A75" },
+                                  { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "ЗАДГАЙ 1" },
+                                  { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "ЗАДГАЙ 2" },
+                                  { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
+                                ];
+                                try {
+                                  for (const item of defaults) {
+                                    await setDoc(doc(collection(db, 'exhibitors')), {
+                                      name: item.name,
+                                      activity: item.activity,
+                                      booth: item.booth,
+                                      createdAt: serverTimestamp()
+                                    });
+                                  }
+                                } catch (error) {
+                                  handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
+                                }
+                              }}
+                              className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg font-medium transition-colors"
+                            >
+                              Үндсэн байгууллагуудыг ачаалах
+                            </button>
+                          </td></tr>
                         ) : (
                           exhibitors.map((exhibitor) => (
                             <tr key={exhibitor.id} className="hover:bg-slate-50/50 transition-colors">
@@ -693,12 +767,20 @@ export default function AdminDashboard() {
                               <td className="p-4 text-sm text-slate-600">{exhibitor.activity}</td>
                               <td className="p-4 font-bold text-center text-emerald-700 bg-emerald-50/10 border-x border-slate-100">{exhibitor.booth}</td>
                               <td className="p-4 text-center">
-                                <button 
-                                  onClick={() => handleDeleteExhibitor(exhibitor.id)}
-                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                <div className="flex items-center justify-center gap-2">
+                                  <button 
+                                    onClick={() => editExhibitor(exhibitor)}
+                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                  >
+                                    Засах
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDeleteExhibitor(exhibitor.id)}
+                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))

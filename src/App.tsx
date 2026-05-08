@@ -176,7 +176,7 @@ export default function App() {
     { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
   ];
 
-  const allExhibitors = [...hardcodedExhibitors, ...exhibitors];
+  const allExhibitors = exhibitors.length > 0 ? exhibitors : hardcodedExhibitors;
   const bookedBooths = allExhibitors.map(e => e.booth.split(',').map(b => b.trim())).flat();
   
   const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
