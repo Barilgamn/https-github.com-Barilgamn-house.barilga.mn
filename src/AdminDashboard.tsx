@@ -235,6 +235,7 @@ export default function AdminDashboard() {
       alert("Бүх талбарыг бөглөнө үү.");
       return;
     }
+    
     try {
       if (editingExhibitor) {
         await updateDoc(doc(db, 'exhibitors', editingExhibitor.id), {
@@ -257,18 +258,20 @@ export default function AdminDashboard() {
       setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
       setIsAddingExhibitor(false);
     } catch (error) {
+      console.error("Save exhibitor error:", error);
       handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
     }
   };
 
   const editExhibitor = (exhibitor: Exhibitor) => {
-    setEditingExhibitor(exhibitor);
     setNewExhibitor({
       name: exhibitor.name,
       activity: exhibitor.activity,
       booth: exhibitor.booth,
       isPaid: exhibitor.isPaid || false
     });
+    setEditingExhibitor(exhibitor);
+    setIsAddingExhibitor(true);
   };
 
   const handleDeleteExhibitor = async (id: string) => {
@@ -287,6 +290,7 @@ export default function AdminDashboard() {
       alert("Огноо, цаг болон гарчгийг оруулна уу.");
       return;
     }
+    
     try {
       if (editingSchedule) {
         await updateDoc(doc(db, 'schedules', editingSchedule.id), {
@@ -309,6 +313,7 @@ export default function AdminDashboard() {
       setNewSchedule({ date: '', time: '', title: '', description: '' });
       setIsAddingSchedule(false);
     } catch (error) {
+      console.error("Save schedule error:", error);
       handleFirestoreError(error, OperationType.WRITE, 'schedules');
     }
   };
@@ -324,13 +329,14 @@ export default function AdminDashboard() {
   };
 
   const editSchedule = (schedule: Schedule) => {
-    setEditingSchedule(schedule);
     setNewSchedule({
       date: schedule.date,
       time: schedule.time,
       title: schedule.title,
       description: schedule.description || ''
     });
+    setEditingSchedule(schedule);
+    setIsAddingSchedule(true);
   };
 
   const handleAddAdmin = async (e: React.FormEvent) => {
@@ -935,9 +941,10 @@ export default function AdminDashboard() {
                               <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-1.5">Огноо</label>
                                 <input
-                                  type="date"
+                                  type="text"
                                   value={newSchedule.date}
                                   onChange={(e) => setNewSchedule({...newSchedule, date: e.target.value})}
+                                  placeholder="Өдөр 1"
                                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
                                   required
                                 />
