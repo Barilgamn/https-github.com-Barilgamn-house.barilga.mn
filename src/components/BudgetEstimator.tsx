@@ -34,7 +34,17 @@ export const BudgetEstimator: React.FC = () => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [isManual, setIsManual] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [manualData, setManualData] = useState({
+    area: 100,
+    stories: 1,
+    complexity: "Moderate" as const,
+    wallMaterial: "Тоосго"
+  });
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null);
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -49,40 +59,66 @@ export const BudgetEstimator: React.FC = () => {
   };
 
   const calculateBudget = (structure: HouseStructure) => {
-    const { concreteVolumeM3, rebarWeightTon, roofAreaSqm } = structure.estimatedMaterialBreakdown;
-    const area = structure.estimatedAreaSqm;
-    
-    const concreteCost = concreteVolumeM3 * MARKET_PRICES.concrete;
-    const rebarCost = rebarWeightTon * MARKET_PRICES.rebar;
-    const roofCost = roofAreaSqm * MARKET_PRICES.roof;
-    
-    // Estimating bricks/blocks based on units count if available, otherwise defaulting to area based
-    const wallCost = area * 350000; // estimated wall material cost per sqm of floor
-    
-    const laborCost = area * MARKET_PRICES.laborPerSqm;
-    const engineeringCost = area * MARKET_PRICES.engineeringPerSqm;
-    const finishingCost = area * MARKET_PRICES.finishingPerSqm;
+    try {
+      const { concreteVolumeM3, rebarWeightTon, roofAreaSqm } = structure.estimatedMaterialBreakdown;
+      const area = structure.estimatedAreaSqm;
+      
+      const concreteCost = concreteVolumeM3 * MARKET_PRICES.concrete;
+      const rebarCost = rebarWeightTon * MARKET_PRICES.rebar;
+      const roofCost = roofAreaSqm * MARKET_PRICES.roof;
+      
+      // Estimating bricks/blocks based on units count if available, otherwise defaulting to area based
+      const wallCost = area * 350000; // estimated wall material cost per sqm of floor
+      
+      const laborCost = area * MARKET_PRICES.laborPerSqm;
+      const engineeringCost = area * MARKET_PRICES.engineeringPerSqm;
+      const finishingCost = area * MARKET_PRICES.finishingPerSqm;
 
-    // Apply complexity multiplier
-    const multiplier = 1; // Basic
-    const complexityFactor = structure.complexity === "Complex" ? 1.5 : structure.complexity === "Moderate" ? 1.2 : 1;
-    
-    const breakdown = [
-      { label: "Суурь & Бүтээц (Бетон, Арматур)", value: (concreteCost + rebarCost) * complexityFactor, description: `${concreteVolumeM3}м3 бетон, ${rebarWeightTon}т арматур`, icon: <Building2 className="text-blue-500" /> },
-      { label: "Хана & Хамар хана", value: wallCost * complexityFactor, description: `${structure.wallMaterial} хийцлэлээр`, icon: <BrickWall className="text-orange-500" /> },
-      { label: "Дээвэр", value: roofCost * complexityFactor, description: `${roofAreaSqm}м2 талбайтай ${structure.roofType}`, icon: <Layers className="text-emerald-500" /> },
-      { label: "Дотор засал", value: finishingCost * complexityFactor, description: "Засал чимэглэлийн материалууд", icon: <CheckCircle2 className="text-pink-500" /> },
-      { label: "Инженерчлэл", value: engineeringCost * complexityFactor, description: "Цахилгаан, Сантехник, Халаалт", icon: <Cog className="text-slate-500" /> },
-      { label: "Ажиллах хүч", value: laborCost * complexityFactor, description: "Барилга угсралтын ажил гүйцэтгэл", icon: <Construction className="text-yellow-600" /> },
-    ];
+      // Apply complexity multiplier
+      const complexityFactor = structure.complexity === "Complex" ? 1.5 : structure.complexity === "Moderate" ? 1.2 : 1;
+      
+      const breakdown = [
+        { label: "Суурь & Бүтээц (Бетон, Арматур)", value: (concreteCost + rebarCost) * complexityFactor, description: `${concreteVolumeM3}м3 бетон, ${rebarWeightTon}т арматур`, icon: <Building2 className="text-blue-500" /> },
+        { label: "Хана & Хамар хана", value: wallCost * complexityFactor, description: `${structure.wallMaterial} хийцлэлээр`, icon: <BrickWall className="text-orange-500" /> },
+        { label: "Дээвэр", value: roofCost * complexityFactor, description: `${roofAreaSqm}м2 талбайтай ${structure.roofType}`, icon: <Layers className="text-emerald-500" /> },
+        { label: "Дотор засал", value: finishingCost * complexityFactor, description: "Засал чимэглэлийн материалууд", icon: <CheckCircle2 className="text-pink-500" /> },
+        { label: "Инженерчлэл", value: engineeringCost * complexityFactor, description: "Цахилгаан, Сантехник, Халаалт", icon: <Cog className="text-slate-500" /> },
+        { label: "Ажиллах хүч", value: laborCost * complexityFactor, description: "Барилга угсралтын ажил гүйцэтгэл", icon: <Construction className="text-yellow-600" /> },
+      ];
 
-    const total = breakdown.reduce((acc, item) => acc + item.value, 0);
-    setBudget({ total, breakdown });
+      const total = breakdown.reduce((acc, item) => acc + item.value, 0);
+      setBudget({ total, breakdown });
+    } catch (err) {
+      console.error("Calculation error:", err);
+      setError("Төсөв бодоход алдаа гарлаа. Та мэдээллээ шалгаад дахин оролдоно уу.");
+    }
+  };
+
+  const handleManualCalculate = () => {
+    setError(null);
+    const mockStructure: HouseStructure = {
+      foundationType: "Concrete",
+      wallMaterial: manualData.wallMaterial,
+      roofType: "Metal Tile",
+      estimatedAreaSqm: manualData.area,
+      storyCount: manualData.stories,
+      complexity: manualData.complexity,
+      specialFeatures: [],
+      estimatedMaterialBreakdown: {
+        concreteVolumeM3: manualData.area * 0.4,
+        rebarWeightTon: manualData.area * 0.05,
+        wallUnitsCount: manualData.area * 40,
+        roofAreaSqm: manualData.area * 1.3
+      }
+    };
+    setResult(mockStructure);
+    calculateBudget(mockStructure);
   };
 
   const handleAnalyze = async () => {
     if (!selectedImage) return;
     setAnalyzing(true);
+    setError(null);
     
     try {
       const base64Data = selectedImage.split(',')[1];
@@ -98,9 +134,12 @@ export const BudgetEstimator: React.FC = () => {
         const generated = await generateHousePreview(analysis);
         if (generated) setPreviewImage(generated);
         setIsGeneratingImage(false);
+      } else {
+        throw new Error("Analysis failed to return result");
       }
     } catch (err) {
       console.error(err);
+      setError("AI дүн шижилгээ хийхэд алдаа гарлаа. Та зургаа сольж үзэх эсвэл механик аргаар оруулаарай.");
     } finally {
       setAnalyzing(false);
       setIsGeneratingImage(false);
@@ -126,60 +165,144 @@ export const BudgetEstimator: React.FC = () => {
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Өөрийн байшингийн зургаа оруулаад barilga.mn-ий зах зээлийн үнэ ханшаар барилгын зардлын задаргааг хараарай.
           </p>
+
+          <div className="flex justify-center mt-8">
+            <div className="bg-white p-1 rounded-2xl shadow-sm border border-slate-200 inline-flex">
+              <button 
+                onClick={() => setIsManual(false)}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${!isManual ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Зургаар шинжлэх
+              </button>
+              <button 
+                onClick={() => setIsManual(true)}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${isManual ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Механик оруулах
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Left Column: Image Input */}
+          {/* Left Column: Input */}
           <div className="space-y-6">
-            <div 
-              className={`relative aspect-video rounded-3xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center bg-white shadow-xl ${selectedImage ? 'border-emerald-500' : 'border-slate-300 hover:border-emerald-400 cursor-pointer'}`}
-              onClick={() => !selectedImage && fileInputRef.current?.click()}
-            >
-              {selectedImage ? (
-                <>
-                  <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setSelectedImage(null); setResult(null); setBudget(null); setPreviewImage(null); }}
-                    className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full backdrop-blur-md hover:bg-black/70 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
-                </>
-              ) : (
-                <div className="text-center p-8">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
-                    <Upload size={32} />
-                  </div>
-                  <p className="text-slate-900 font-bold mb-2">Зураг оруулах</p>
-                  <p className="text-sm text-slate-500">Drag & drop эсвэл энд дарж зургаа сонгоно уу</p>
+            {!isManual ? (
+              <>
+                <div 
+                  className={`relative aspect-video rounded-3xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center bg-white shadow-xl ${selectedImage ? 'border-emerald-500' : 'border-slate-300 hover:border-emerald-400 cursor-pointer'}`}
+                  onClick={() => !selectedImage && fileInputRef.current?.click()}
+                >
+                  {selectedImage ? (
+                    <>
+                      <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSelectedImage(null); setResult(null); setBudget(null); setPreviewImage(null); setError(null); }}
+                        className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full backdrop-blur-md hover:bg-black/70 transition-colors"
+                      >
+                        <X size={20} />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="text-center p-8">
+                      <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
+                        <Upload size={32} />
+                      </div>
+                      <p className="text-slate-900 font-bold mb-2">Зураг оруулах</p>
+                      <p className="text-sm text-slate-500">Drag & drop эсвэл энд дарж зургаа сонгоно уу</p>
+                    </div>
+                  )}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                  />
                 </div>
-              )}
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*" 
-                onChange={handleImageUpload} 
-              />
-            </div>
 
-            <button
-              onClick={handleAnalyze}
-              disabled={!selectedImage || analyzing}
-              className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all ${!selectedImage || analyzing ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200'}`}
-            >
-              {analyzing ? (
-                <>
-                  <Loader2 className="animate-spin" size={20} />
-                  AI Дүн шижилгээ хийж байна...
-                </>
-              ) : (
-                <>
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3 text-rose-600 text-sm"
+                  >
+                    <Info className="shrink-0 mt-0.5" size={16} />
+                    <p>{error}</p>
+                  </motion.div>
+                )}
+
+                <button
+                  onClick={handleAnalyze}
+                  disabled={!selectedImage || analyzing}
+                  className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all ${!selectedImage || analyzing ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200'}`}
+                >
+                  {analyzing ? (
+                    <>
+                      <Loader2 className="animate-spin" size={20} />
+                      AI Дүн шижилгээ хийж байна...
+                    </>
+                  ) : (
+                    <>
+                      <Calculator size={20} />
+                      Төсөвийг зургаар тооцох
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700">Талбай (м2)</label>
+                    <input 
+                      type="number" 
+                      value={manualData.area}
+                      onChange={(e) => setManualData({...manualData, area: Number(e.target.value)})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700">Давхар</label>
+                    <input 
+                      type="number" 
+                      value={manualData.stories}
+                      onChange={(e) => setManualData({...manualData, stories: Number(e.target.value)})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700">Төвөгшил</label>
+                  <select 
+                    value={manualData.complexity}
+                    onChange={(e) => setManualData({...manualData, complexity: e.target.value as any})}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  >
+                    <option value="Simple">Энгийн</option>
+                    <option value="Moderate">Дундаж</option>
+                    <option value="Complex">Нарийн хийцлэлтэй</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700">Үндсэн хийцлэл</label>
+                  <input 
+                    type="text" 
+                    value={manualData.wallMaterial}
+                    onChange={(e) => setManualData({...manualData, wallMaterial: e.target.value})}
+                    placeholder="Тоосго, Блок, СИП хавтан..."
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  />
+                </div>
+                <button
+                  onClick={handleManualCalculate}
+                  className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all mt-4"
+                >
                   <Calculator size={20} />
-                  Төсөвийг бодож гаргах
-                </>
-              )}
-            </button>
+                  Төсвийг тооцох
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Results */}

@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { db, auth, handleFirestoreError, OperationType } from './firebase';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { LogOut, Trash2, Home, Users, Building, Activity, ShieldAlert, UserPlus, ShieldCheck, Calendar } from 'lucide-react';
+import { LogOut, Trash2, Home, Users, Building, Activity, ShieldAlert, UserPlus, ShieldCheck, Calendar, FileText, Receipt, Mail, Send, Download, X, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence } from 'motion/react';
+import { ContractInvoiceModal } from './components/ContractInvoiceModal';
 
 interface AdminUser {
   id: string;
@@ -42,7 +44,24 @@ interface Exhibitor {
   name: string;
   activity: string;
   booth: string;
-  isPaid?: boolean;
+  email: string;
+  phone?: string;
+  registerId?: string;
+  address?: string;
+  ceoName?: string;
+  products?: string;
+  hasStand?: boolean;
+  hasBanner?: boolean;
+  bannerText?: string;
+  boothSize?: number;
+  pricePerSqm?: number;
+  additionalPrice?: number;
+  totalPrice?: number;
+  discountPct?: number;
+  finalPrice?: number;
+  status?: 'pending' | 'contract_sent' | 'paid';
+  contractDate?: string;
+  invoiceNo?: string;
   createdAt: string | Date;
 }
 
@@ -64,14 +83,59 @@ export default function AdminDashboard() {
   const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [activeTab, setActiveTab] = useState<'booths' | 'exhibitors' | 'visitors' | 'admins' | 'schedules' | 'analytics'>('booths');
-  const [newAdminEmail, setNewAdminEmail] = useState('');
-  const [newExhibitor, setNewExhibitor] = useState({ name: '', activity: '', booth: '', isPaid: false });
+  const [newExhibitor, setNewExhibitor] = useState({ 
+    name: '', 
+    activity: '', 
+    booth: '', 
+    email: '', 
+    phone: '',
+    registerId: '',
+    address: '',
+    ceoName: '',
+    products: '',
+    hasStand: false,
+    hasBanner: false,
+    bannerText: '',
+    boothSize: 3,
+    pricePerSqm: 80000,
+    additionalPrice: 0,
+    totalPrice: 240000,
+    discountPct: 0,
+    finalPrice: 240000,
+    status: 'pending' as const
+  });
   const [editingExhibitor, setEditingExhibitor] = useState<Exhibitor | null>(null);
   const [isAddingExhibitor, setIsAddingExhibitor] = useState(false);
+  const [managingContractExhibitor, setManagingContractExhibitor] = useState<Exhibitor | null>(null);
   const [newSchedule, setNewSchedule] = useState({ date: '', time: '', title: '', description: '' });
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
   const [isAddingSchedule, setIsAddingSchedule] = useState(false);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const resetExhibitorForm = () => {
+    setNewExhibitor({ 
+      name: '', 
+      activity: '', 
+      booth: '', 
+      email: '', 
+      phone: '',
+      registerId: '',
+      address: '',
+      ceoName: '',
+      products: '',
+      hasStand: false,
+      hasBanner: false,
+      bannerText: '',
+      boothSize: 3,
+      pricePerSqm: 80000,
+      additionalPrice: 0,
+      totalPrice: 240000,
+      discountPct: 0,
+      finalPrice: 240000,
+      status: 'pending'
+    });
+  };
   const [authChecking, setAuthChecking] = useState(true);
   const [authError, setAuthError] = useState<string>('');
 
@@ -231,31 +295,47 @@ export default function AdminDashboard() {
 
   const handleAddExhibitor = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newExhibitor.name || !newExhibitor.activity || !newExhibitor.booth) {
-      alert("Бүх талбарыг бөглөнө үү.");
+    if (!newExhibitor.name || !newExhibitor.email || !newExhibitor.booth) {
+      alert("Байгууллагын нэр, Имэйл, Талбай зэргийг заавал бөглөнө үү.");
       return;
     }
     
     try {
       if (editingExhibitor) {
         await updateDoc(doc(db, 'exhibitors', editingExhibitor.id), {
-          name: newExhibitor.name,
-          activity: newExhibitor.activity,
-          booth: newExhibitor.booth,
-          isPaid: newExhibitor.isPaid
+          ...newExhibitor,
+          status: newExhibitor.status || 'pending'
         });
         setEditingExhibitor(null);
       } else {
         const dbRef = collection(db, 'exhibitors');
         await setDoc(doc(dbRef), {
-           name: newExhibitor.name,
-           activity: newExhibitor.activity,
-           booth: newExhibitor.booth,
-           isPaid: newExhibitor.isPaid,
+           ...newExhibitor,
+           status: 'pending',
            createdAt: serverTimestamp()
         });
       }
-      setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
+      setNewExhibitor({ 
+        name: '', 
+        activity: '', 
+        booth: '', 
+        email: '', 
+        phone: '',
+        registerId: '',
+        address: '',
+        ceoName: '',
+        products: '',
+        hasStand: false,
+        hasBanner: false,
+        bannerText: '',
+        boothSize: 3,
+        pricePerSqm: 80000,
+        additionalPrice: 0,
+        totalPrice: 240000,
+        discountPct: 0,
+        finalPrice: 240000,
+        status: 'pending'
+      });
       setIsAddingExhibitor(false);
     } catch (error) {
       console.error("Save exhibitor error:", error);
@@ -263,12 +343,65 @@ export default function AdminDashboard() {
     }
   };
 
+  const calculateExhibitorPrices = (
+    size: number, 
+    price: number, 
+    additional: number, 
+    discount: number
+  ) => {
+    const total = size * price + additional;
+    const final = total * (1 - discount / 100);
+    return { total, final };
+  };
+
+  const handleExhibitorFieldChange = (field: string, value: any) => {
+    setNewExhibitor(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // If price related fields change, recalculate
+      if (['boothSize', 'pricePerSqm', 'additionalPrice', 'discountPct'].includes(field)) {
+        const { total, final } = calculateExhibitorPrices(
+          field === 'boothSize' ? Number(value) : updated.boothSize,
+          field === 'pricePerSqm' ? Number(value) : updated.pricePerSqm,
+          field === 'additionalPrice' ? Number(value) : updated.additionalPrice,
+          field === 'discountPct' ? Number(value) : updated.discountPct
+        );
+        updated.totalPrice = total;
+        updated.finalPrice = final;
+      }
+      
+      return updated;
+    });
+  };
+
   const editExhibitor = (exhibitor: Exhibitor) => {
+    const boothSize = exhibitor.boothSize || 3;
+    const pricePerSqm = exhibitor.pricePerSqm || 80000;
+    const additionalPrice = exhibitor.additionalPrice || 0;
+    const discountPct = exhibitor.discountPct || 0;
+    
+    const { total, final } = calculateExhibitorPrices(boothSize, pricePerSqm, additionalPrice, discountPct);
+
     setNewExhibitor({
       name: exhibitor.name,
-      activity: exhibitor.activity,
+      activity: exhibitor.activity || '',
       booth: exhibitor.booth,
-      isPaid: exhibitor.isPaid || false
+      email: exhibitor.email,
+      phone: exhibitor.phone || '',
+      registerId: exhibitor.registerId || '',
+      address: exhibitor.address || '',
+      ceoName: exhibitor.ceoName || '',
+      products: exhibitor.products || '',
+      hasStand: exhibitor.hasStand || false,
+      hasBanner: exhibitor.hasBanner || false,
+      bannerText: exhibitor.bannerText || '',
+      boothSize,
+      pricePerSqm,
+      additionalPrice,
+      totalPrice: total,
+      discountPct,
+      finalPrice: final,
+      status: exhibitor.status || 'pending'
     });
     setEditingExhibitor(exhibitor);
     setIsAddingExhibitor(true);
@@ -569,6 +702,23 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
+              <AnimatePresence>
+                {managingContractExhibitor && (
+                  <ContractInvoiceModal 
+                    exhibitor={managingContractExhibitor}
+                    onClose={() => setManagingContractExhibitor(null)}
+                    onUpdate={async (data) => {
+                      try {
+                        await updateDoc(doc(db, 'exhibitors', managingContractExhibitor.id), data);
+                        setManagingContractExhibitor(prev => prev ? { ...prev, ...data } : null);
+                      } catch (error) {
+                        handleFirestoreError(error, OperationType.UPDATE, `exhibitors/${managingContractExhibitor.id}`);
+                      }
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+
               <div className="p-0 overflow-x-auto">
                 {activeTab === 'admins' && (
                   <div className="p-6">
@@ -684,86 +834,198 @@ export default function AdminDashboard() {
 
                     {/* Exhibitor Modal */}
                     {(editingExhibitor || isAddingExhibitor) && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-                          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
+                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl my-8 overflow-hidden">
+                          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                             <h3 className="text-lg font-bold text-slate-800">{editingExhibitor ? 'Байгууллага засах' : 'Байгууллага нэмэх'}</h3>
                             <button
                               type="button"
                               onClick={() => {
                                 setEditingExhibitor(null);
                                 setIsAddingExhibitor(false);
-                                setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
+                                resetExhibitorForm();
                               }}
                               className="text-slate-400 hover:text-slate-600 transition-colors"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                              <X size={24} />
                             </button>
                           </div>
                           
-                          <form onSubmit={handleAddExhibitor} className="p-6 space-y-4">
-                            <div>
-                              <label className="block text-sm font-bold text-slate-700 mb-1.5">Байгууллагын нэр</label>
-                              <input
-                                type="text"
-                                value={newExhibitor.name}
-                                onChange={(e) => setNewExhibitor({...newExhibitor, name: e.target.value})}
-                                placeholder="Монкабель ХХК"
-                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
-                                required
-                              />
+                          <form onSubmit={handleAddExhibitor} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Байгууллагын нэр *</label>
+                                <input
+                                  type="text"
+                                  value={newExhibitor.name}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, name: e.target.value})}
+                                  placeholder="Жишээ: Монкабель ХХК"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Имэйл хаяг *</label>
+                                <input
+                                  type="email"
+                                  value={newExhibitor.email}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, email: e.target.value})}
+                                  placeholder="info@company.mn"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Талбай *</label>
+                                <input
+                                  type="text"
+                                  value={newExhibitor.booth}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, booth: e.target.value})}
+                                  placeholder="A12, A13"
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Утасны дугаар</label>
+                                <input
+                                  type="text"
+                                  value={newExhibitor.phone}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, phone: e.target.value})}
+                                  placeholder="9911..."
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-sm font-bold text-slate-700 mb-1.5">Үйл ажиллагааны чиглэл</label>
-                              <input
-                                type="text"
-                                value={newExhibitor.activity}
-                                onChange={(e) => setNewExhibitor({...newExhibitor, activity: e.target.value})}
-                                placeholder="Цахилгаан, холбоо"
-                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
-                                required
-                              />
+
+                            <hr className="border-slate-100" />
+                            
+                            <h4 className="font-bold text-emerald-700 text-sm uppercase tracking-wider">Гэрээний мэдээлэл</h4>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Регистрийн дугаар</label>
+                                <input
+                                  type="text"
+                                  value={newExhibitor.registerId}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, registerId: e.target.value})}
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Захирлын нэр</label>
+                                <input
+                                  type="text"
+                                  value={newExhibitor.ceoName}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, ceoName: e.target.value})}
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Хаяг</label>
+                                <input
+                                  type="text"
+                                  value={newExhibitor.address}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, address: e.target.value})}
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Бүтээгдэхүүн, үйлчилгээ</label>
+                                <textarea
+                                  value={newExhibitor.products}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, products: e.target.value})}
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all h-20"
+                                />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-sm font-bold text-slate-700 mb-1.5">Талбай (таслалаар зааж болно)</label>
-                              <input
-                                type="text"
-                                value={newExhibitor.booth}
-                                onChange={(e) => setNewExhibitor({...newExhibitor, booth: e.target.value})}
-                                placeholder="A12, A13"
-                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none transition-all"
-                                required
-                              />
+
+                            <hr className="border-slate-100" />
+                            
+                            <h4 className="font-bold text-emerald-700 text-sm uppercase tracking-wider">Санхүүгийн мэдээлэл</h4>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Хэмжээ (м2)</label>
+                                <input
+                                  type="number"
+                                  value={newExhibitor.boothSize}
+                                  onChange={(e) => handleExhibitorFieldChange('boothSize', e.target.value)}
+                                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">1м2 үнэ</label>
+                                <input
+                                  type="number"
+                                  value={newExhibitor.pricePerSqm}
+                                  onChange={(e) => handleExhibitorFieldChange('pricePerSqm', e.target.value)}
+                                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Нэмэлт</label>
+                                <input
+                                  type="number"
+                                  value={newExhibitor.additionalPrice}
+                                  onChange={(e) => handleExhibitorFieldChange('additionalPrice', e.target.value)}
+                                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Хямдрал (%)</label>
+                                <input
+                                  type="number"
+                                  value={newExhibitor.discountPct}
+                                  onChange={(e) => handleExhibitorFieldChange('discountPct', e.target.value)}
+                                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none"
+                                />
+                              </div>
                             </div>
-                            <div className="flex items-center gap-3 pt-2">
-                              <label className="flex items-center gap-2 cursor-pointer">
+                            
+                            <div className="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
+                              <span className="font-bold opacity-70">ТӨЛӨХ ДҮН:</span>
+                              <span className="text-2xl font-black text-emerald-400">{Math.round(newExhibitor.finalPrice).toLocaleString()} ₮</span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-6 pt-2">
+                              <label className="flex items-center gap-2 cursor-pointer group">
                                 <input
                                   type="checkbox"
-                                  checked={newExhibitor.isPaid}
-                                  onChange={(e) => setNewExhibitor({...newExhibitor, isPaid: e.target.checked})}
+                                  checked={newExhibitor.hasStand}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, hasStand: e.target.checked})}
                                   className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
                                 />
-                                <span className="text-sm font-bold text-slate-700">Төлбөр төлсөн эсэх</span>
+                                <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">Стэнд засуулна</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer group">
+                                <input
+                                  type="checkbox"
+                                  checked={newExhibitor.hasBanner}
+                                  onChange={(e) => setNewExhibitor({...newExhibitor, hasBanner: e.target.checked})}
+                                  className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                                />
+                                <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">Хаяг хийлгэнэ</span>
                               </label>
                             </div>
                             
-                            <div className="pt-4 flex gap-3">
+                            <div className="pt-4 flex gap-3 sticky bottom-0 bg-white">
                               <button
                                 type="button"
                                 onClick={() => {
                                   setEditingExhibitor(null);
                                   setIsAddingExhibitor(false);
-                                  setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
+                                  resetExhibitorForm();
                                 }}
-                                className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-bold transition-colors"
+                                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl font-bold transition-colors"
                               >
                                 Цуцлах
                               </button>
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold transition-colors"
+                                className="flex-2 px-4 py-3 bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl font-bold transition-colors shadow-lg shadow-emerald-600/20"
                               >
-                                {editingExhibitor ? 'Хадгалах' : 'Нэмэх'}
+                                {editingExhibitor ? 'Мэдээлэл шинэчлэх' : 'Шинэ байгууллага нэмэх'}
                               </button>
                             </div>
                           </form>
@@ -773,94 +1035,71 @@ export default function AdminDashboard() {
 
                     <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden border border-slate-100">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-                          <th className="p-4 font-semibold">Огноо</th>
-                          <th className="p-4 font-semibold">Компани</th>
-                          <th className="p-4 font-semibold">Үйл ажиллагаа</th>
-                          <th className="p-4 font-semibold text-center bg-emerald-50/30">Талбай</th>
-                          <th className="p-4 font-semibold text-center">Төлбөр</th>
-                          <th className="p-4 font-semibold w-24 text-center">Үйлдэл</th>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] uppercase tracking-widest font-black">
+                          <th className="p-4">Огноо</th>
+                          <th className="p-4">Байгууллага</th>
+                          <th className="p-4">Талбай</th>
+                          <th className="p-4">Төлөв</th>
+                          <th className="p-4">Төлбөр</th>
+                          <th className="p-4 text-center">Үйлдэл</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {exhibitors.length === 0 ? (
-                          <tr><td colSpan={6} className="p-8 text-center text-slate-400">
-                            <p className="mb-4">Мэдээлэл олдсонгүй</p>
-                            <button 
-                              onClick={async () => {
-                                const defaults = [
-                                  { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
-                                  { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
-                                  { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
-                                  { name: "Централ Рич Монголиа ХХК", activity: "Барилгын материал", booth: "A20" },
-                                  { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
-                                  { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
-                                  { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын тоног төхөөрөмж", booth: "A31, A71" },
-                                  { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц, хаус барилга", booth: "A33" },
-                                  { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
-                                  { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
-                                  { name: "АГЛУТ ХХК", activity: "Инжинер, төсөл", booth: "A36" },
-                                  { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
-                                  { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД ХХК", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
-                                  { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
-                                  { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69, A81" },
-                                  { name: "ЭС ЭН ДИ ХХК", activity: "Барилга угсралт", booth: "A73" },
-                                  { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Цахилгаан, гэрэлтүүлэг", booth: "A75" },
-                                  { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "ЗАДГАЙ 1" },
-                                  { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "ЗАДГАЙ 2" },
-                                  { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "ЗАДГАЙ 3" }
-                                ];
-                                try {
-                                  for (const item of defaults) {
-                                    await setDoc(doc(collection(db, 'exhibitors')), {
-                                      name: item.name,
-                                      activity: item.activity,
-                                      booth: item.booth,
-                                      isPaid: false,
-                                      createdAt: serverTimestamp()
-                                    });
-                                  }
-                                } catch (error) {
-                                  handleFirestoreError(error, OperationType.WRITE, 'exhibitors');
-                                }
-                              }}
-                              className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg font-medium transition-colors"
-                            >
-                              Үндсэн байгууллагуудыг ачаалах
-                            </button>
-                          </td></tr>
+                          <tr><td colSpan={6} className="p-8 text-center text-slate-400">Мэдээлэл олдсонгүй</td></tr>
                         ) : (
                           exhibitors.map((exhibitor) => (
-                            <tr key={exhibitor.id} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{formatDate(exhibitor.createdAt)}</td>
-                              <td className="p-4 font-medium text-slate-800">{exhibitor.name}</td>
-                              <td className="p-4 text-sm text-slate-600">{exhibitor.activity}</td>
-                              <td className="p-4 font-bold text-center text-emerald-700 bg-emerald-50/10 border-x border-slate-100">{exhibitor.booth}</td>
-                              <td className="p-4 text-center">
-                                {exhibitor.isPaid ? (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                    Төлсөн
+                            <tr key={exhibitor.id} className="hover:bg-slate-50/50 transition-all group">
+                              <td className="p-4 text-xs text-slate-400 whitespace-nowrap">{formatDate(exhibitor.createdAt).split(',')[0]}</td>
+                              <td className="p-4">
+                                <p className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{exhibitor.name}</p>
+                                <p className="text-xs text-slate-500 flex items-center gap-1"><Mail size={12}/> {exhibitor.email}</p>
+                              </td>
+                              <td className="p-4">
+                                <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs font-black rounded-lg border border-emerald-100">
+                                  {exhibitor.booth}
+                                </span>
+                              </td>
+                              <td className="p-4">
+                                {exhibitor.status === 'paid' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                    <CheckCircle2 size={12} /> Төлсөн
+                                  </span>
+                                ) : exhibitor.status === 'contract_sent' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200">
+                                    <Send size={12} /> Гэрээ илгээсэн
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                                    Хүлээгдэж буй
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-500 border border-slate-200">
+                                    <Activity size={12} /> Хүлээгдэж буй
                                   </span>
-                                )}
+                                ) }
                               </td>
-                              <td className="p-4 text-center">
+                              <td className="p-4 font-mono text-xs font-bold text-slate-600">
+                                {exhibitor.finalPrice?.toLocaleString()} ₮
+                              </td>
+                              <td className="p-4">
                                 <div className="flex items-center justify-center gap-2">
                                   <button 
+                                    onClick={() => setManagingContractExhibitor(exhibitor)}
+                                    className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all border border-transparent hover:border-emerald-100"
+                                    title="Гэрээ & Нэхэмжлэх"
+                                  >
+                                    <FileText size={18} />
+                                  </button>
+                                  <button 
                                     onClick={() => editExhibitor(exhibitor)}
-                                    className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all border border-transparent hover:border-blue-100"
                                     title="Засах"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                                    <Activity size={18} />
                                   </button>
                                   <button 
                                     onClick={() => handleDeleteExhibitor(exhibitor.id)}
-                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all border border-transparent hover:border-red-100"
+                                    title="Устгах"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 size={18} />
                                   </button>
                                 </div>
                               </td>

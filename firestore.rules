@@ -81,11 +81,9 @@ service cloud.firestore {
 
     // Exhibitor Validation
     function isValidExhibitor(data) {
-      return data.keys().hasAll(['name', 'activity', 'booth', 'createdAt'])
-        && (data.keys().size() == 4 || (data.keys().size() == 5 && 'isPaid' in data && data.isPaid is bool))
+      return data.keys().hasAll(['name', 'email', 'createdAt'])
         && data.name is string && data.name.size() > 0 && data.name.size() <= 200
-        && data.activity is string && data.activity.size() > 0 && data.activity.size() <= 200
-        && data.booth is string && data.booth.size() > 0 && data.booth.size() <= 200
+        && data.email is string && data.email.size() > 0 && data.email.size() <= 100
         && data.createdAt == request.time;
     }
 
@@ -93,11 +91,11 @@ service cloud.firestore {
     match /exhibitors/{exhibitorId} {
       allow read, list: if true;
       allow create: if isAdmin() && isValidId(exhibitorId) && isValidExhibitor(incoming());
-      allow update: if isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'activity', 'booth', 'isPaid'])
-                    && (!('name' in incoming()) || (incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 200))
-                    && (!('activity' in incoming()) || (incoming().activity is string && incoming().activity.size() > 0 && incoming().activity.size() <= 200))
-                    && (!('booth' in incoming()) || (incoming().booth is string && incoming().booth.size() > 0 && incoming().booth.size() <= 200))
-                    && (!('isPaid' in incoming()) || incoming().isPaid is bool);
+      allow update: if isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly([
+        'name', 'activity', 'booth', 'email', 'phone', 'registerId', 'address', 'ceoName', 
+        'products', 'hasStand', 'hasBanner', 'bannerText', 'boothSize', 'pricePerSqm', 
+        'additionalPrice', 'totalPrice', 'discountPct', 'finalPrice', 'status', 'contractDate', 'invoiceNo'
+      ]);
       allow delete: if isAdmin();
     }
 

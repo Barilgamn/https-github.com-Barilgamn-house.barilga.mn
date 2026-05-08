@@ -45,9 +45,27 @@
         "name": { "type": "string" },
         "activity": { "type": "string" },
         "booth": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "registerId": { "type": "string" },
+        "address": { "type": "string" },
+        "ceoName": { "type": "string" },
+        "products": { "type": "string" },
+        "hasStand": { "type": "boolean" },
+        "hasBanner": { "type": "boolean" },
+        "bannerText": { "type": "string" },
+        "boothSize": { "type": "number" },
+        "pricePerSqm": { "type": "number" },
+        "additionalPrice": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "discountPct": { "type": "number" },
+        "finalPrice": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "contract_sent", "paid"] },
+        "contractDate": { "type": "string" },
+        "invoiceNo": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["name", "activity", "booth", "createdAt"]
+      "required": ["name", "email", "createdAt"]
     },
     "PageView": {
       "title": "Page View",
