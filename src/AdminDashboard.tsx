@@ -918,7 +918,7 @@ export default function AdminDashboard() {
                                 try {
                                   for (const item of defaults) {
                                     await setDoc(doc(collection(db, 'schedules')), {
-                                      date: '',
+                                      date: 'Өдөр 1',
                                       time: item.time,
                                       title: item.title,
                                       description: item.description,
