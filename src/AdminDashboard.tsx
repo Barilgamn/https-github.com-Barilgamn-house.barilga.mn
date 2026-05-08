@@ -237,14 +237,13 @@ export default function AdminDashboard() {
     }
     try {
       if (editingExhibitor) {
-        await setDoc(doc(db, 'exhibitors', editingExhibitor.id), {
+        await updateDoc(doc(db, 'exhibitors', editingExhibitor.id), {
           name: newExhibitor.name,
           activity: newExhibitor.activity,
           booth: newExhibitor.booth,
           isPaid: newExhibitor.isPaid
-        }, { merge: true });
+        });
         setEditingExhibitor(null);
-        alert("Байгууллагын мэдээлэл амжилттай шинэчлэгдлээ!");
       } else {
         const dbRef = collection(db, 'exhibitors');
         await setDoc(doc(dbRef), {
@@ -254,7 +253,6 @@ export default function AdminDashboard() {
            isPaid: newExhibitor.isPaid,
            createdAt: serverTimestamp()
         });
-        alert("Байгууллага амжилттай нэмэгдлээ!");
       }
       setNewExhibitor({ name: '', activity: '', booth: '', isPaid: false });
       setIsAddingExhibitor(false);
@@ -291,14 +289,13 @@ export default function AdminDashboard() {
     }
     try {
       if (editingSchedule) {
-        await setDoc(doc(db, 'schedules', editingSchedule.id), {
+        await updateDoc(doc(db, 'schedules', editingSchedule.id), {
           date: newSchedule.date,
           time: newSchedule.time,
           title: newSchedule.title,
           description: newSchedule.description
-        }, { merge: true });
+        });
         setEditingSchedule(null);
-        alert("Хөтөлбөр амжилттай шинэчлэгдлээ!");
       } else {
         const dbRef = collection(db, 'schedules');
         await setDoc(doc(dbRef), {
@@ -308,7 +305,6 @@ export default function AdminDashboard() {
           description: newSchedule.description,
           createdAt: serverTimestamp()
         });
-        alert("Хөтөлбөр амжилттай нэмэгдлээ!");
       }
       setNewSchedule({ date: '', time: '', title: '', description: '' });
       setIsAddingSchedule(false);
