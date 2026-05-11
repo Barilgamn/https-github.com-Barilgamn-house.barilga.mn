@@ -31,7 +31,7 @@ export async function analyzeHouseImage(imageBuffer: string, mimeType: string): 
             },
           },
           {
-            text: "Analyze this house design/image. Estimate its structural volumes for budgeting in Mongolia. Provide foundation type, wall material (Brick, Concrete Block, SIP panel, etc), roof type, total area (sqm), story count, and complexity level. ALSO, provide rough ESTIMATES for: concrete volume (m3), rebar weight (tons), wall units count, and roof area (sqm). Return ONLY the JSON object.",
+            text: "Analyze this house design/image. Estimate its structural volumes for budgeting in Mongolia. Provide foundation type, wall material (Brick, Concrete Block, SIP panel, etc), roof type, total area (sqm), story count, and complexity level. ALSO, provide rough ESTIMATES for: concrete volume (m3), rebar weight (tons), wall units count, and roof area (sqm). Return ONLY a JSON object with these keys: foundationType, wallMaterial, roofType, estimatedAreaSqm, storyCount, complexity (Simple/Moderate/Complex), and estimatedMaterialBreakdown (object with concreteVolumeM3, rebarWeightTon, wallUnitsCount, roofAreaSqm).",
           },
         ],
       },
@@ -45,11 +45,7 @@ export async function analyzeHouseImage(imageBuffer: string, mimeType: string): 
             roofType: { type: Type.STRING },
             estimatedAreaSqm: { type: Type.NUMBER },
             storyCount: { type: Type.NUMBER },
-            complexity: { type: Type.STRING, enum: ["Simple", "Moderate", "Complex"] },
-            specialFeatures: { 
-              type: Type.ARRAY,
-              items: { type: Type.STRING }
-            },
+            complexity: { type: Type.STRING },
             estimatedMaterialBreakdown: {
               type: Type.OBJECT,
               properties: {
@@ -71,9 +67,7 @@ export async function analyzeHouseImage(imageBuffer: string, mimeType: string): 
       return null;
     }
     
-    // Fallback for markdown blocks if present
-    const cleanJson = response.text.trim().replace(/^```json/, '').replace(/```$/, '').trim();
-    return JSON.parse(cleanJson) as HouseStructure;
+    return JSON.parse(response.text) as HouseStructure;
   } catch (error) {
     console.error("AI Analysis Error:", error);
     return null;
@@ -88,7 +82,7 @@ export async function generateHousePreview(structure: HouseStructure): Promise<s
     Environment: Modern landscaping, finished exterior, large windows, sunset lighting, architectural photography style, 8k resolution.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-3.1-flash-image-preview",
       contents: {
         parts: [{ text: prompt }],
       },

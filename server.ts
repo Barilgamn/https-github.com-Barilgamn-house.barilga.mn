@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = Number(process.env.PORT) || 8080;
+const PORT = 3000;
 
 // 1. Setup minimal health checks
 app.get('/health', (req, res) => res.status(200).send('OK'));
