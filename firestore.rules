@@ -53,7 +53,9 @@ service cloud.firestore {
       // Allow public creation
       allow create: if isValidId(bookingId) && isValidBoothBooking(incoming());
       
-      allow read, list, delete: if isAdmin();
+      // Allow public read for map availability
+      allow read, list: if true;
+      allow delete: if isAdmin();
     }
 
     // Collection: Visitor Registrations

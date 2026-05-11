@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export interface HouseStructure {
   foundationType: string;
@@ -21,22 +21,20 @@ export interface HouseStructure {
 export async function analyzeHouseImage(imageBuffer: string, mimeType: string): Promise<HouseStructure | null> {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: [
-        {
-          parts: [
-            {
-              inlineData: {
-                data: imageBuffer,
-                mimeType: mimeType,
-              },
+      model: "gemini-3.1-pro-preview",
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              data: imageBuffer,
+              mimeType: mimeType,
             },
-            {
-              text: "Analyze this house design. Estimate its structural volumes for budgeting in Mongolia. Provide foundation type, wall material (Brick/Concrete Block/SIP/etc), roof type, total area (sqm), story count, and complexity. ALSO, provide rough ESTIMATES for: concrete volume (m3), rebar weight (tons), wall units count (pieces/sqm equivalents), and roof area (sqm). Your output must be in JSON format.",
-            },
-          ],
-        },
-      ],
+          },
+          {
+            text: "Analyze this house design/image. Estimate its structural volumes for budgeting in Mongolia. Provide foundation type, wall material (Brick, Concrete Block, SIP panel, etc), roof type, total area (sqm), story count, and complexity level. ALSO, provide rough ESTIMATES for: concrete volume (m3), rebar weight (tons), wall units count, and roof area (sqm). Return ONLY the JSON object.",
+          },
+        ],
+      },
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -68,8 +66,14 @@ export async function analyzeHouseImage(imageBuffer: string, mimeType: string): 
       },
     });
 
-    if (!response.text) return null;
-    return JSON.parse(response.text.trim()) as HouseStructure;
+    if (!response.text) {
+      console.warn("AI Analysis: No text in response");
+      return null;
+    }
+    
+    // Fallback for markdown blocks if present
+    const cleanJson = response.text.trim().replace(/^```json/, '').replace(/```$/, '').trim();
+    return JSON.parse(cleanJson) as HouseStructure;
   } catch (error) {
     console.error("AI Analysis Error:", error);
     return null;
