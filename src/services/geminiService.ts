@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 export interface HouseStructure {
   foundationType: string;
@@ -20,8 +20,12 @@ export interface HouseStructure {
 
 export async function analyzeHouseImage(imageBuffer: string, mimeType: string): Promise<HouseStructure | null> {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn("GEMINI_API_KEY is not defined in the frontend environment.");
+    }
+    
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: {
         parts: [
           {
@@ -82,7 +86,7 @@ export async function generateHousePreview(structure: HouseStructure): Promise<s
     Environment: Modern landscaping, finished exterior, large windows, sunset lighting, architectural photography style, 8k resolution.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-flash-image-preview",
+      model: "gemini-2.5-flash-image",
       contents: {
         parts: [{ text: prompt }],
       },
