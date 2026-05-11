@@ -5,8 +5,7 @@
 
 import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Check, Info, Phone, Calendar, Clock, ArrowRight, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun, Facebook, Twitter, Calculator } from 'lucide-react';
-import { BudgetEstimator } from './components/BudgetEstimator';
+import { Check, Info, Phone, Calendar, Clock, ArrowRight, MapPin, Menu, X, Construction, BrickWall, Sofa, Trees, Cog, Smartphone, CreditCard, Tractor, ArrowUp, Zap, Home, Fan, Sun, Facebook, Twitter } from 'lucide-react';
 import { translations, Lang } from './i18n';
 import { db, auth, handleFirestoreError, OperationType } from './firebase';
 import { collection, addDoc, serverTimestamp, doc, getDocFromServer, onSnapshot, query, orderBy } from 'firebase/firestore';
@@ -299,7 +298,6 @@ export default function App() {
   const navLinks = [
     { name: d.nav[0], href: '#' },
     { name: d.nav[1], href: '#companies' },
-    { name: 'ТӨСӨВ', href: '#estimator' },
     { name: d.nav[2], href: '#visitor', isVisitor: true },
     { name: d.nav[3], href: '#agenda' },
     { name: d.nav[4], href: '#contact' },
@@ -401,14 +399,6 @@ export default function App() {
           {/* Desktop Menu */}
           <div className="hidden lg:flex flex-1 justify-center items-center gap-6 text-center">
              {navLinks.map((link, idx) => {
-               if (link.href === '#estimator') {
-                 return (
-                   <a key={idx} href={link.href} className="text-emerald-400 hover:text-emerald-300 font-bold text-sm transition-colors uppercase tracking-wide whitespace-nowrap flex items-center gap-1">
-                     <Calculator size={14} />
-                     {link.name}
-                   </a>
-                 );
-               }
                if (link.isVisitor) {
                  return (
                    <button key={idx} onClick={() => setIsVisitorModalOpen(true)} className="text-white/90 hover:text-white font-medium text-sm transition-colors uppercase tracking-wide cursor-pointer whitespace-nowrap">
@@ -466,14 +456,6 @@ export default function App() {
                 </select>
               </div>
               {navLinks.map((link, idx) => {
-                if (link.href === '#estimator') {
-                  return (
-                    <a key={idx} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className="text-emerald-400 block px-3 py-3 rounded-md text-base font-bold hover:bg-white/10 transition-colors uppercase tracking-wide text-center flex items-center justify-center gap-2">
-                       <Calculator size={18} />
-                       {link.name}
-                    </a>
-                  );
-                }
                 if (link.isVisitor) {
                   return (
                     <button key={idx} onClick={() => { setIsMobileMenuOpen(false); setIsVisitorModalOpen(true); }} className="text-white block w-full px-3 py-3 rounded-md text-base font-medium hover:bg-white/10 transition-colors uppercase tracking-wide text-center">
@@ -948,9 +930,6 @@ export default function App() {
           </div>
         </div>
       </section>
-
-      {/* Budget Estimator Section */}
-      <BudgetEstimator />
 
       {/* Agenda Section */}
       <section id="agenda" className="py-24 bg-slate-50 scroll-mt-20 relative overflow-hidden">
