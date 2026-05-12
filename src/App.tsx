@@ -910,7 +910,7 @@ export default function App() {
                  { name: "МОНГОЛЫН БАРИЛГЫН ИНЖЕНЕРҮҮДИЙН ХОЛБОО", logo: "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://mace.org.mn&size=128", url: "https://mace.org.mn/" },
                  { name: "БАРИЛГЫН ХӨГЖЛИЙН ТӨВ", logo: "https://i0.wp.com/barilgaexpo.mn/wp-content/uploads/2025/10/Untitled-1.png?w=800&ssl=1", url: "https://barilga.gov.mn/" },
                  { name: "АМИНЫ ОРОН СУУЦНЫ ИННОВАЦ ХӨГЖЛИЙН ТӨВ", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTqki7mgt-BefzkfYKG_QEVLpvEkh8pPO89A&s", url: "https://www.facebook.com/miniiaminioronsuuts/" },
-                 { name: "MONGOLIAN GREEN BUILDING COUNCIL", logo: "https://mgbc.mn/wp-content/uploads/2025/02/cropped-favicon-1.png", url: "https://mgbc.mn/" },
+                 { name: "MONGOLIAN GREEN BUILDING COUNCIL", logo: "https://worldgbc.org/wp-content/uploads/2025/10/Mongolian-Green-Building-Council-logo-sent-to-WGBC-1.png", url: "https://mgbc.mn/" },
                  { name: "БАРИЛГАЧИН ХУДАЛДААНЫ ТӨВ", logo: "https://i0.wp.com/barilgaexpo.mn/wp-content/uploads/2024/06/barilgachinnnnn.png?w=600&ssl=1", url: "https://barilgachin.mn/" }
                ].map((org, i) => (
                  <a key={i} href={org.url} target="_blank" rel="noopener noreferrer" className="w-48 h-48 sm:w-56 sm:h-56 bg-white rounded-[2rem] shadow-[0_10px_40px_rgb(0,0,0,0.08)] flex flex-col items-center justify-center p-4 sm:p-6 text-center border border-slate-100 transition-transform hover:-translate-y-1 overflow-hidden gap-3 cursor-pointer">
