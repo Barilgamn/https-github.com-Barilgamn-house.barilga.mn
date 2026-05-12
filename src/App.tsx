@@ -45,47 +45,47 @@ export default function App() {
   const AGENDA_DATA = [
     {
       date: "2026.05.15",
-      day: "БААСАН гараг",
-      title: "Нээлтийн өдөр",
+      day: d.days[0],
+      title: lang === 'mn' ? "Нээлтийн өдөр" : (lang === 'en' ? "Opening Day" : (lang === 'cn' ? "开幕日" : "День открытия")),
       color: "bg-amber-400",
       items: [
-        { time: "11:00 - 12:00", title: "НЭЭЛТИЙН ҮЙЛ АЖИЛЛАГАА", desc: "" },
-        { time: "12:00 - 13:00", title: "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт", desc: "" },
+        { time: "11:00 - 12:00", title: lang === 'mn' ? "НЭЭЛТИЙН ҮЙЛ АЖИЛЛАГАА" : (lang === 'en' ? "OPENING CEREMONY" : (lang === 'cn' ? "开幕仪式" : "ЦЕРЕМОНИЯ ОТКРЫТИЯ")), desc: "" },
+        { time: "12:00 - 13:00", title: lang === 'mn' ? "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт" : (lang === 'en' ? "LIVE broadcast of exhibitors" : (lang === 'cn' ? "参展商现场直播" : "Прямая трансляция участников")), desc: "" },
       ]
     },
     {
       date: "2026.05.16",
-      day: "БЯМБА гараг",
-      title: "Амины орон сууцны төлөвлөлт",
+      day: d.days[1],
+      title: lang === 'mn' ? "Амины орон сууцны төлөвлөлт" : (lang === 'en' ? "Private Housing Planning" : (lang === 'cn' ? "私人住宅规划" : "Планирование частного жилья")),
       color: "bg-rose-400",
       items: [
-        { time: "11:00 - 12:00", title: "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт", desc: "" },
-        { time: "11:20 - 11:40", title: "Нийтэд хүртээмжтэй төлөвлөлт /АОС/", desc: "Илтгэгч: В.Ойдов (Нийтэд Хүртээмжтэй Пассив Лаборатори Хауз төсөл санаачлагч)" },
-        { time: "11:40 - 12:00", title: "Эрчим хүчний хэмнэлттэй барилгын дулаалга", desc: "Илтгэгч: Мөнхбаяр (ШУТИС ЭХИС-ийн багш)" },
-        { time: "12:00 - 12:20", title: "Эрчим хүчний хэмнэлттэй амины орон сууцны төлөвлөлт, зураг төсөлд тавигдах шаардлага", desc: "Илтгэгч: Отгончимэг (Амины орон сууцны инновац хөгжлийн төв)" },
-        { time: "12:20 - 12:40", title: "Хөрсний төрлүүдийн шинж чанар ба барилгын суурийн нөлөөлөл", desc: "Илтгэгч: О.Балдорж (Монгол Улсын зөвлөх инженер, Гавьяат барилгачин)" },
-        { time: "12:40 - 13:00", title: "Угсармал хийцийг амины орон сууцанд төлөвлөх нь", desc: "Илтгэгч: Д.Энхтүвшин (Эн Си Ди Прекон ХХК Гүйцэтгэх захирал, Зөвлөх инженер)" },
-        { time: "13:00 - 13:20", title: "Амины орон сууцны агаар сэлгэлтийг оновчтой төлөвлөх нь", desc: "Илтгэгч: Ц.Уранцэцэг (БАC-ийн багш доктор, дэд профессор)" },
-        { time: "13:20 - 13:40", title: "Амины орон сууцны төрөл хийцлэлийн сул ба давуу тал", desc: "Танилцуулга: Хишигмөнх Барилгачин групп" },
+        { time: "11:00 - 12:00", title: lang === 'mn' ? "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт" : (lang === 'en' ? "LIVE broadcast of exhibitors" : (lang === 'cn' ? "参展商现场直播" : "Прямая трансляция участников")), desc: "" },
+        { time: "11:20 - 11:40", title: lang === 'mn' ? "Нийтэд хүртээмжтэй төлөвлөлт /АОС/" : (lang === 'en' ? "Publicly Accessible Planning /PH/" : (lang === 'cn' ? "公共无障碍规划/私人住宅/" : "Общедоступное планирование /ЧЖ/")), desc: lang === 'mn' ? "Илтгэгч: В.Ойдов (Нийтэд Хүртээмжтэй Пассив Лаборатори Хауз төсөл санаачлагч)" : (lang === 'en' ? "Speaker: V. Oidov (Initiator of Publicly Accessible Passive Lab House project)" : (lang === 'cn' ? "演讲者：V. Oidov（公共无障碍被动式实验室住宅项目发起人）" : "Спикер: В. Ойдов (Инициатор проекта общедоступного пассивного лабораторного дома)")) },
+        { time: "11:40 - 12:00", title: lang === 'mn' ? "Эрчим хүчний хэмнэлттэй барилгын дулаалга" : (lang === 'en' ? "Energy Efficient Building Insulation" : (lang === 'cn' ? "节能建筑隔热" : "Энергоэффективная изоляция зданий")), desc: lang === 'mn' ? "Илтгэгч: Мөнхбаяр (ШУТИС ЭХИС-ийн багш)" : (lang === 'en' ? "Speaker: Munkhbayar (Teacher at MUST)" : (lang === 'cn' ? "演讲者：Munkhbayar（MUST老师）" : "Спикер: Мунхбаяр (Преподаватель ШУТИС)")) },
+        { time: "12:00 - 12:20", title: lang === 'mn' ? "Эрчим хүчний хэмнэлттэй амины орон сууцны төлөвлөлт, зураг төсөлд тавигдах шаардлага" : (lang === 'en' ? "Requirements for planning and design of energy-efficient private housing" : (lang === 'cn' ? "节能私人住宅规划设计要求" : "Требования к планированию и проектированию энергоэффективного частного жилья")), desc: lang === 'mn' ? "Илтгэгч: Отгончимэг (Амины орон сууцны инновац хөгжлийн төв)" : (lang === 'en' ? "Speaker: Otgonchimeg (Private Housing Innovation Development Center)" : (lang === 'cn' ? "演讲者：Otgonchimeg（私人住宅创新发展中心）" : "Спикер: Отгончимэг (Центр инновационного развития частного жилья)")) },
+        { time: "12:20 - 12:40", title: lang === 'mn' ? "Хөрсний төрлүүдийн шинж чанар ба барилгын суурийн нөлөөлөл" : (lang === 'en' ? "Properties of soil types and impact on building foundations" : (lang === 'cn' ? "土壤类型的特性及其对建筑基础的影响" : "Свойства типов почв и влияние на фундаменты зданий")), desc: lang === 'mn' ? "Илтгэгч: О.Балдорж (Монгол Улсын зөвлөх инженер, Гавьяат барилгачин)" : (lang === 'en' ? "Speaker: O. Baldorj (Consultant Engineer of Mongolia, Honored Construction Worker)" : (lang === 'cn' ? "演讲者：O. Baldorj（蒙古国咨询工程师，荣誉建筑工人）" : "Спикер: О. Балдорж (Инженер-консультант Монголии, Заслуженный строитель)")) },
+        { time: "12:40 - 13:00", title: lang === 'mn' ? "Угсармал хийцийг амины орон сууцанд төлөвлөх нь" : (lang === 'en' ? "Planning prefabricated structures in private housing" : (lang === 'cn' ? "私人住宅中预制结构规划" : "Планирование сборных конструкций в частном жилье")), desc: lang === 'mn' ? "Илтгэгч: Д.Энхтүвшин (Эн Си Ди Прекон ХХК Гүйцэтгэх захирал, Зөвлөх инженер)" : (lang === 'en' ? "Speaker: D. Enkhtuvshin (Executive Director of NCD Precon LLC, Consultant Engineer)" : (lang === 'cn' ? "演讲者：D. Enkhtuvshin（NCD Precon LLC执行董事，咨询工程师）" : "Спикер: Д. Энхтүвшин (Исполнительный директор NCD Precon LLC, Инженер-консультант)")) },
+        { time: "13:00 - 13:20", title: lang === 'mn' ? "Амины орон сууцны агаар сэлгэлтийг оновчтой төлөвлөх нь" : (lang === 'en' ? "Optimal planning of ventilation for private housing" : (lang === 'cn' ? "私人住宅通风优化规划" : "Оптимальное планирование вентиляции для частного жилья")), desc: lang === 'mn' ? "Илтгэгч: Ц.Уранцэцэг (БАC-ийн багш доктор, дэд профессор)" : (lang === 'en' ? "Speaker: Ts. Urantsetseg (MUST teacher, PhD, associate professor)" : (lang === 'cn' ? "演讲者：Ts. Urantsetseg（MUST老师，博士，副教授）" : "Спикер: Ц. Уранцэцэг (Преподаватель ШУТИС, доктор, доцент)")) },
+        { time: "13:20 - 13:40", title: lang === 'mn' ? "Амины орон сууцны төрөл хийцлэлийн сул ба давуу тал" : (lang === 'en' ? "Advantages and disadvantages of various private housing structures" : (lang === 'cn' ? "各种私人住宅结构的优缺点" : "Преимущества и недостатки различных конструкций частного жилья")), desc: lang === 'mn' ? "Танилцуулга: Хишигмөнх Барилгачин групп" : (lang === 'en' ? "Introduction: Khishigmonkh Barilgachin Group" : (lang === 'cn' ? "简介：Khishigmonkh Barilgachin集团" : "Введение: Khishigmonkh Barilgachin Group")) },
       ]
     },
     {
       date: "2026.05.17",
-      day: "НЯМ гараг",
-      title: "Инженерийн шийдэл & Санхүүжилт",
+      day: d.days[2],
+      title: lang === 'mn' ? "Инженерийн шийдэл & Санхүүжилт" : (lang === 'en' ? "Engineering Solutions & Financing" : (lang === 'cn' ? "工程解决方案与融资" : "Инженерные решения и финансирование")),
       color: "bg-cyan-400",
       items: [
-        { time: "11:00 - 12:00", title: "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт", desc: "" },
-        { time: "12:00 - 12:20", title: "Нар + Батарейн системийг амины орон сууцанд ухаалгаар төлөвлөх нь", desc: "Илтгэгч: Г.Бат-Эрдэнэ (Монкабел системс ХХК)" },
-        { time: "12:20 - 12:40", title: "Эрүүл хөрс, бохирын найдвартай шийдэл", desc: "Илтгэгч: С.Цэвэгсүрэн (ПЛАСТИК ЦЕНТР ХХК Ерөнхий захирал)" },
-        { time: "12:40 - 13:00", title: "Пассив амины орон сууц гэж юу вэ?", desc: "Илтгэгч: Ганбаа (Пассив барилгын хүрээлэн), А.Амарбаяр" },
-        { time: "13:00 - 13:40", title: "\"Дулаалгын ач холбогдол ба шийдэл\"", desc: "Илтгэгч: Ц.Түмэнбаяр (Хашаандаа сайхан амьдаръя)" },
-        { time: "13:40 - 14:00", title: "Сэргээгдэх эрчим хүчээр халаалтаа шийдэх нь", desc: "Илтгэгч: Ө.Отгонсүрэн (Грийн Солар ХХК)" },
-        { time: "14:20 - 14:40", title: "Hybrid house гэж юу вэ?", desc: "Илтгэгч: Ц.Бат-Эрдэнэ (HYBRID HOUSE LLC үүсгэн байгуулагч)" },
-        { time: "14:40 - 15:00", title: "Санхүүгийн дэмжлэг үзүүлэх боломжууд", desc: "Танилцуулга: Хамтарч ажиллаж буй банкууд" },
-        { time: "15:00 - 15:30", title: "Ногоон барилгын үнэлгээний гэрчилгээ /BestGer/", desc: "Илтгэгч: Ц.Батгэрэл (Ногоон барилгын хүрээлэн)" },
-        { time: "15:30 - 16:00", title: "BIPV - Барилгыг эрчим хүч үйлдвэрлэгч болгох технологи", desc: "Илтгэгч: С.Болорбайгаль (BIPV Glass технологийн сургагч)" },
-        { time: "16:00 - 16:30", title: "ХААЛТЫН ҮЙЛ АЖИЛЛАГАА", desc: "" },
+        { time: "11:00 - 12:00", title: lang === 'mn' ? "LIVE үзэсгэлэнд оролцогчдын шууд дамжуулалт" : (lang === 'en' ? "LIVE broadcast of exhibitors" : (lang === 'cn' ? "参展商现场直播" : "Прямая трансляция участников")), desc: "" },
+        { time: "12:00 - 12:20", title: lang === 'mn' ? "Нар + Батарейн системийг амины орон сууцанд ухаалгаар төлөвлөх нь" : (lang === 'en' ? "Smart planning of Solar + Battery systems for private housing" : (lang === 'cn' ? "私人住宅太阳能+电池系统智能规划" : "Умное планирование систем Солнце + Аккумулятор для частного жилья")), desc: lang === 'mn' ? "Илтгэгч: Г.Бат-Эрдэнэ (Монкабел системс ХХК)" : (lang === 'en' ? "Speaker: G. Bat-Erdene (Monkabel Systems LLC)" : (lang === 'cn' ? "演讲者：G. Bat-Erdene（Monkabel Systems LLC）" : "Спикер: Г. Бат-Эрдэнэ (Monkabel Systems LLC)")) },
+        { time: "12:20 - 12:40", title: lang === 'mn' ? "Эрүүл хөрс, бохирын найдвартай шийдэл" : (lang === 'en' ? "Healthy Soil and Reliable Sewerage Solutions" : (lang === 'cn' ? "健康的土壤和可靠的污水处理解决方案" : "Здоровая почва и надежные канализационные решения")), desc: lang === 'mn' ? "Илтгэгч: С.Цэвэгсүрэн (ПЛАСТИК ЦЕНТР ХХК Ерөнхий захирал)" : (lang === 'en' ? "Speaker: S. Tsevegsuren (General Director of Plastic Center LLC)" : (lang === 'cn' ? "演讲者：S. Tsevegsuren（Plastic Center LLC总经理）" : "Спикер: С. Цэвэгсүрэн (Генеральный директор Plastic Center LLC)")) },
+        { time: "12:40 - 13:00", title: lang === 'mn' ? "Пассив амины орон сууц гэж юу вэ?" : (lang === 'en' ? "What is a passive house?" : (lang === 'cn' ? "什么是被动式房屋？" : "Что такое пассивный дом?")), desc: lang === 'mn' ? "Илтгэгч: Ганбаа (Пассив барилгын хүрээлэн), А.Амарбаяр" : (lang === 'en' ? "Speaker: Ganbaatar (Passive Building Institute), A. Amarbayar" : (lang === 'cn' ? "演讲者：Ganbaatar（被动式建筑研究所），A. Amarbayar" : "Спикер: Ганбаатар (Институт пассивного строительства), А. Амарбаяр")) },
+        { time: "13:00 - 13:40", title: lang === 'mn' ? "\"Дулаалгын ач холбогдол ба шийдэл\"" : (lang === 'en' ? "\"Importance of insulation and solutions\"" : (lang === 'cn' ? "“隔热的重要性和解决方案”" : "\"Важность изоляции и решений\"")), desc: lang === 'mn' ? "Илтгэгч: Ц.Түмэнбаяр (Хашаандаа сайхан амьдаръя)" : (lang === 'en' ? "Speaker: Ts. Tumenbayar (Live well in your yard)" : (lang === 'cn' ? "演讲者：Ts. Tumenbayar（在您的院子里过上美好的生活）" : "Спикер: Ц. Түмэнбаяр (Живите хорошо в своем дворе)")) },
+        { time: "13:40 - 14:00", title: lang === 'mn' ? "Сэргээгдэх эрчим хүчээр халаалтаа шийдэх нь" : (lang === 'en' ? "Solving heating with renewable energy" : (lang === 'cn' ? "利用可再生能源解决供暖问题" : "Решение проблемы отопления с помощью возобновляемых источников энергии")), desc: lang === 'mn' ? "Илтгэгч: Ө.Отгонсүрэн (Грийн Солар ХХК)" : (lang === 'en' ? "Speaker: O. Otgonsuren (Green Solar LLC)" : (lang === 'cn' ? "演讲者：O. Otgonsuren（Green Solar LLC）" : "Спикер: О. Отгонсүрэн (Green Solar LLC)")) },
+        { time: "14:20 - 14:40", title: lang === 'mn' ? "Hybrid house гэж юу вэ?" : (lang === 'en' ? "What is a Hybrid house?" : (lang === 'cn' ? "什么是混合动力住宅？" : "Что такое Гибридный дом?")), desc: lang === 'mn' ? "Илтгэгч: Ц.Бат-Эрдэнэ (HYBRID HOUSE LLC үүсгэн байгуулагч)" : (lang === 'en' ? "Speaker: Ts. Bat-Erdene (Founder of Hybrid House LLC)" : (lang === 'cn' ? "演讲者：Ts. Bat-Erdene（Hybrid House LLC创始人）" : "Спикер: Ц. Бат-Эрдэнэ (Основатель Hybrid House LLC)")) },
+        { time: "14:40 - 15:00", title: lang === 'mn' ? "Санхүүгийн дэмжлэг үзүүлэх боломжууд" : (lang === 'en' ? "Financial Support Opportunities" : (lang === 'cn' ? "财务支持机会" : "Возможности финансовой поддержки")), desc: lang === 'mn' ? "Танилцуулга: Хамтарч ажиллаж буй банкууд" : (lang === 'en' ? "Introduction: Participating banks" : (lang === 'cn' ? "简介：参展银行" : "Введение: Участвующие банки")) },
+        { time: "15:00 - 15:30", title: lang === 'mn' ? "Ногоон барилгын үнэлгээний гэрчилгээ /BestGer/" : (lang === 'en' ? "Green Building Certification /BestGer/" : (lang === 'cn' ? "绿色建筑评估证书/BestGer/" : "Сертификат оценки зеленого строительства /BestGer/")), desc: lang === 'mn' ? "Илтгэгч: Ц.Батгэрэл (Ногоон барилгын хүрээлэн)" : (lang === 'en' ? "Speaker: Ts. Batgerel (Green Building Institute)" : (lang === 'cn' ? "演讲者：Ts. Batgerel（绿色建筑研究所）" : "Спикер: Ц. Батгэрэл (Институт зеленого строительства)")) },
+        { time: "15:30 - 16:00", title: lang === 'mn' ? "BIPV - Барилгыг эрчим хүч үйлдвэрлэгч болгох технологи" : (lang === 'en' ? "BIPV - Technology to make buildings energy producers" : (lang === 'cn' ? "BIPV - 使建筑成为能源生产者的技术" : "BIPV - Технология превращения зданий в производителей энергии")), desc: lang === 'mn' ? "Илтгэгч: С.Болорбайгаль (BIPV Glass технологийн сургагч)" : (lang === 'en' ? "Speaker: S. Bolorbaigal (BIPV Glass technology trainer)" : (lang === 'cn' ? "演讲者：S. Bolorbaigal（BIPV玻璃技术培训师）" : "Спикер: С. Болорбайгаль (Тренер по технологии BIPV Glass)")) },
+        { time: "16:00 - 16:30", title: lang === 'mn' ? "ХААЛТЫН ҮЙЛ АЖИЛЛАГАА" : (lang === 'en' ? "CLOSING CEREMONY" : (lang === 'cn' ? "闭幕仪式" : "ЦЕРЕМОНИЯ ЗАКРЫТИЯ")), desc: "" },
       ]
     }
   ];
@@ -219,34 +219,46 @@ export default function App() {
   }, []);
 
   const hardcodedExhibitors = [
-    { name: "Урта Камел Транс ХХК", activity: "Тээвэр зууч", booth: "A13" },
+    { name: "Захиалагдсан", activity: "Барилгын материал", booth: "A1" },
+    { name: "БАРИЛГАЧИН ГРУПП", activity: "барилгын материал", booth: "A2" },
+    { name: "МАНАДА ХХК", activity: "Барилгын материал", booth: "A3" },
+    { name: "МАЙМОНСООРС ХХК", activity: "Барилга угсралт", booth: "A4" },
+    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Инженерчлэл", booth: "A5, A6, A7, A8" },
+    { name: "Урта Камел Транс ХХК", activity: "Тээвэр зууч", booth: "A13, A14" },
     { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
     { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
-    { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
-    { name: "Централ Рич Монголиа ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A20" },
-    { name: "Тэнгэр уул трэйд ХХК", activity: "Барилга угсралт", booth: "A24" },
+    { name: "НАРТЫН ГОЛОМТ ХХК", activity: "Барилга угсралт", booth: "A17, A18" },
+    { name: "СОЛАР ПОВЕР АЙРИС ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A19" },
+    { name: "ЦЕНТРАЛ РИЧ МОНГОЛИА ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A20" },
+    { name: "БАРИЛГА МН СЭТГҮҮЛ", activity: "Хэвлэл мэдээлэл", booth: "A23" },
+    { name: "АМИНЫ ОРОН СУУЦ КАТАЛОГИ", activity: "Хэвлэл мэдээлэл", booth: "A24" },
+    { name: "СЭРЖАГ ХИЙЦ ХХК", activity: "Барилга угсралт", booth: "A25, A26" },
     { name: "ХАДХАН ВИШН ХХК", activity: "Барилга угсралт", booth: "A27" },
-    { name: "ТЕРМИГАС ИМПИАНТИ ТЕХНОЛОГИ ХХК", activity: "Инженерийн шийдэл", booth: "A28" },
-    { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A29" },
-    { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A30" },
-    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "АОС төсөл", booth: "A31" },
+    { name: "ТЕРМИГАС ИМПИАНТИ ТЕХНОЛОГИ ХХК", activity: "Инженерчлэл", booth: "A28" },
+    { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
+    { name: "нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
+    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "АОС төсөл", booth: "A31, A32, A71, A72" },
     { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц", booth: "A33" },
-    { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
+    { name: "ТИ ЭНД ЖИ ХХК", activity: "Барилга угсралт", booth: "A34" },
     { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
-    { name: "АГЛУТ ХХК", activity: "Инженер, төсөл", booth: "A36" },
-    { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
-    { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
-    { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
-    { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A60" },
-    { name: "МАЙМОНСООРС ХХК", activity: "Барилга угсралт", booth: "A67" },
-    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69" },
-    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын Материал", booth: "A71" },
-    { name: "ЭС ЭН ДИ ХХК", activity: "Барилгын Материал", booth: "A73" },
+    { name: "БАРИЛГАЧИН ГРУПП ХХК", activity: "Барилга угсралт", booth: "A36" },
+    { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37, A38" },
+    { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", booth: "A41, A42" },
+    { name: "БЭЛЭГ АРВИЖИХ ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A43, A44" },
+    { name: "КАСТЛ ХАУС ХХК", activity: "Барилга угсралт", booth: "A45" },
+    { name: "HAUS", activity: "Барилга угсралт", booth: "A46" },
+    { name: "ЦОНХ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A47, A48" },
+    { name: "ЭМ-ЖИ-АЙ ЭМ” ХХК", activity: "Барилга угсралт", booth: "A53, A54" },
+    { name: "ГОРГАЗ ХХК", activity: "Инженерчлэл", booth: "A55, A56" },
+    { name: "НЭГҮҮН ИНЖЕНЕРИНГ ХХК", activity: "Инженерчлэл", booth: "A57, A58" },
+    { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59, A60" },
+    { name: "ЭС ЭН ДИ ХХК", activity: "Барилгын материал", booth: "A73, A74" },
     { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Барилгын материал", booth: "A75" },
-    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A81" },
-    { name: "Манада ХХК", activity: "Барилгын материал", booth: "A83" },
+    { name: "ЭН И ЭМ ХХК", activity: "Барилгын материал", booth: "A76" },
+    { name: "ТЭНГЭР УУЛ ТРЕЙД ХХК", activity: "Барилга угсралт", booth: "A77" },
+    { name: "ЭКО КАБЕЛЬ МОНГОЛИА ХХК", activity: "Барилгын материал", booth: "A78" },
     { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "Z1" },
-    { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "Z2" },
+    { name: "\"Өөрийн Байшин Үндэсний Хөтөлбөр\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "Z2" },
     { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "Z3" }
   ];
 
@@ -268,27 +280,13 @@ export default function App() {
   }, [exhibitors]);
 
   const bookedBooths = React.useMemo(() => {
-    // List of booths explicitly defined as AVAILABLE by the user
-    const availableBooths = [
-      'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10',
-      'A23', 'A25', 'A26',
-      'A43', 'A44', 'A45', 'A46', 'A47', 'A48',
-      'A53', 'A54', 'A55', 'A56', 'A57', 'A58',
-      'A63', 'A64', 'A65', 'A66',
-      'A76', 'A77', 'A78',
-      'A84', 'A85', 'A86', 'A87', 'A88'
-    ];
-
-    const allABooths = Array.from({length: 90}, (_, i) => `A${i+1}`);
-    const mandatoryBooked = allABooths.filter(b => !availableBooths.includes(b));
-    
     const list = allExhibitors.map(e => e.booth.split(',').map((b: string) => b.trim())).flat();
     const pendingList = pendingBookings.map(p => p.boothId);
     
-    return Array.from(new Set([...list, ...pendingList, ...mandatoryBooked]));
+    return Array.from(new Set([...list, ...pendingList]));
   }, [allExhibitors, pendingBookings]);
   
-  const sponsorBooths = ['A4', 'A5', 'A6', 'A7', 'A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
+  const sponsorBooths = ['A19', 'A20', 'A29', 'A30', 'A31', 'A32', 'A41', 'A42'];
 
   const scrollToBooking = () => {
     bookingRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -341,7 +339,7 @@ export default function App() {
         disabled={isBooked}
         onClick={() => handleBoothClick(booth)}
         className={btnClass}
-        title={isBooked ? "Захиалагдсан" : isSponsor ? "Спонсорын талбай" : "Боломжтой талбай"}
+        title={isBooked ? d.boothBooked : isSponsor ? d.boothSponsor : d.boothAvailable}
       >
         <span>{booth}</span>
         <span className="text-[9px] sm:text-[10px] font-normal leading-none mt-0.5 opacity-80 z-0">3X3</span>
@@ -370,7 +368,7 @@ export default function App() {
     const path = 'booth_bookings';
     try {
       await addDoc(collection(db, path), data);
-      alert('Таны талбай захиалах хүсэлтийг амжилттай хүлээж авлаа. Бид удахгүй холбогдох болно.');
+      alert(d.formSuccess);
       setIsModalOpen(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, path);
@@ -555,7 +553,7 @@ export default function App() {
             <div className="hidden sm:block w-2 h-2 rounded-full bg-amber-400/50" />
             <div className="flex items-center gap-2.5">
               <MapPin className="w-5 h-5 text-emerald-400" />
-              <span>&quot;Барилгачин&quot; худалдааны төв</span>
+              <span>{d.venue}</span>
             </div>
           </div>
 
@@ -654,13 +652,13 @@ export default function App() {
             <div className="flex flex-col md:flex-row justify-center items-center gap-4 sm:gap-8 text-slate-700 bg-slate-50 px-8 py-5 rounded-3xl border border-slate-200 shadow-sm w-full md:w-auto">
                <div className="flex flex-col text-center md:text-left">
                  <span className="font-medium text-sm text-slate-500">{d.boothA}</span>
-                 <span className="text-2xl font-bold text-slate-900 tracking-tight">80,000₮</span>
+                 <span className="text-2xl font-bold text-slate-900 tracking-tight">{lang === 'mn' ? '80,000₮' : (lang === 'ru' ? '80,000₮' : '$23.5')}</span>
                </div>
                <div className="hidden md:block w-px h-12 bg-slate-200"></div>
                <div className="block md:hidden h-px w-full bg-slate-200 my-2"></div>
                <div className="flex flex-col text-center md:text-left">
                  <span className="font-medium text-sm text-slate-500">{d.boothEmpty}</span>
-                 <span className="text-2xl font-bold text-slate-900 tracking-tight">40,000₮</span>
+                 <span className="text-2xl font-bold text-slate-900 tracking-tight">{lang === 'mn' ? '40,000₮' : (lang === 'ru' ? '40,000₮' : '$11.8')}</span>
                </div>
             </div>
             
@@ -679,90 +677,76 @@ export default function App() {
           </div>
 
           {/* Interactive Floor Plan */}
-          <div className="bg-slate-50 p-4 sm:p-8 rounded-[2rem] border border-slate-200 shadow-sm w-full overflow-x-auto relative min-h-[500px]">
-            <div className="min-w-[900px] lg:w-max lg:mx-auto flex flex-col items-center py-8">
-              
-              {/* STAGE & Top Row */}
-              <div className="flex gap-12 justify-center items-end mb-12 relative w-full px-12">
-              
+          <div className="bg-slate-50 p-4 sm:p-8 rounded-[2rem] border border-slate-200 shadow-sm w-full overflow-x-auto relative min-h-[600px]">
+            {/* Entrance/Exit Indicator */}
+            <div className="absolute top-10 left-10 flex flex-col items-center transform -rotate-[40deg] origin-top-left">
+              <div className="flex gap-1 mb-1">
                 <div className="flex flex-col items-center">
-                  <div className="flex bg-white">
-                    {['A1', 'A2', 'A3', 'A4', 'A5'].map(renderBooth)}
+                  <ArrowUp className="w-8 h-8 text-red-500" />
+                </div>
+                <div className="flex flex-col items-center">
+                  <ArrowUp className="w-8 h-8 text-emerald-500 rotate-180" />
+                </div>
+              </div>
+              <span className="text-[13px] font-black text-slate-500 uppercase tracking-tighter whitespace-nowrap">ОРОХ / ГАРАХ</span>
+            </div>
+
+            <div className="min-w-[950px] lg:w-max lg:mx-auto flex flex-col items-center py-12">
+              
+              {/* STAGE & Top Row: A1-A4 | STAGE | A5-A8 */}
+              <div className="flex gap-16 justify-center items-end mb-24 relative w-full px-12">
+                <div className="flex flex-col items-center">
+                  <div className="flex bg-white shadow-sm">
+                    {['A1', 'A2', 'A3', 'A4'].map(renderBooth)}
                   </div>
-                  <span className="text-xs text-slate-500 mt-2">Санхүүгийн үйлчилгээ</span>
                 </div>
                 
-                <div className="flex items-center justify-center bg-[#0ba14a] text-white font-bold text-xl w-48 h-20 mb-6 shadow-md border-2 border-emerald-600 rounded-sm leading-tight text-center">
+                <div className="flex items-center justify-center bg-[#0ba14a] text-white font-bold text-2xl w-56 h-24 mb-6 shadow-xl border-2 border-emerald-600 rounded-sm leading-tight text-center">
                   STAGE <br /> 8X5
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <div className="flex bg-white">
-                    {['A6', 'A7', 'A8', 'A9', 'A10'].map(renderBooth)}
+                  <div className="flex bg-white shadow-sm">
+                    {['A5', 'A6', 'A7', 'A8'].map(renderBooth)}
                   </div>
-                  <span className="text-xs text-slate-500 mt-2">Санхүүгийн үйлчилгээ</span>
                 </div>
               </div>
 
-              {/* Middle Row */}
-              <div className="flex gap-16 justify-center w-full mb-12">
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-slate-500 mb-1">Сэргээгдэх эрчим хүч</span>
-                  <div className="flex flex-col bg-white">
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+11}`).map(renderBooth)}
-                    </div>
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+21}`).map(renderBooth)}
-                    </div>
+              {/* Middle Section: Block 2 */}
+              <div className="flex gap-20 justify-center w-full mb-20 px-8">
+                {/* Left 8x2 Grid: A13-A20 over A23-A30 */}
+                <div className="flex flex-col bg-white shadow-sm">
+                  <div className="flex">
+                    {['A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20'].map(renderBooth)}
                   </div>
-                  <span className="text-xs text-slate-500 mt-1">Гадна тохижилт</span>
+                  <div className="flex">
+                    {['A23', 'A24', 'A25', 'A26', 'A27', 'A28', 'A29', 'A30'].map(renderBooth)}
+                  </div>
                 </div>
                 
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-slate-500 mb-1">Амины орон сууц / хаус барилга</span>
-                  <div className="flex flex-col bg-white">
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+31}`).map(renderBooth)}
-                    </div>
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+41}`).map(renderBooth)}
-                    </div>
+                {/* Right 8x2 Grid: A31-A38 over A41-A48 */}
+                <div className="flex flex-col bg-white shadow-sm text-center">
+                  <div className="flex">
+                    {['A31', 'A32', 'A33', 'A34', 'A35', 'A36', 'A37', 'A38'].map(renderBooth)}
                   </div>
-                  <span className="text-xs text-slate-500 mt-1">Ухаалаг гэр (Smart home)</span>
+                  <div className="flex">
+                    {['A41', 'A42', 'A43', 'A44', 'A45', 'A46', 'A47', 'A48'].map(renderBooth)}
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom Row */}
-              <div className="flex gap-16 justify-center w-full">
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-slate-500 mb-1">Дотоод засал, интерьер</span>
-                  <div className="flex flex-col bg-white">
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+51}`).map(renderBooth)}
-                    </div>
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+61}`).map(renderBooth)}
-                    </div>
-                  </div>
-                  <span className="text-xs text-slate-500 mt-1">Инженерийн шийдэл</span>
+              {/* Bottom Section: Block 3 */}
+              <div className="flex gap-20 justify-center w-full px-8">
+                {/* Left 8x1 Row: A53-A60 */}
+                <div className="flex bg-white shadow-sm">
+                  {['A53', 'A54', 'A55', 'A56', 'A57', 'A58', 'A59', 'A60'].map(renderBooth)}
                 </div>
 
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-slate-500 mb-1">Барилгын материал</span>
-                  <div className="flex flex-col bg-white">
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+71}`).map(renderBooth)}
-                    </div>
-                    <div className="flex">
-                      {Array.from({length: 10}, (_, i) => `A${i+81}`).map(renderBooth)}
-                    </div>
-                  </div>
-                  <span className="text-xs text-slate-500 mt-1">Барилгын тоног төхөөрөмж</span>
+                {/* Right 8x1 Row: A71-A78 */}
+                <div className="flex bg-white shadow-sm">
+                  {['A71', 'A72', 'A73', 'A74', 'A75', 'A76', 'A77', 'A78'].map(renderBooth)}
                 </div>
               </div>
-
-              {/* Outdoor Section Removed as requested */}
 
             </div>
           </div>
@@ -783,7 +767,7 @@ export default function App() {
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg mb-1">{company.name}</h4>
                   <p className="text-emerald-600 text-sm font-medium">{company.activity}</p>
-                  <p className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold inline-block mt-3 border border-slate-200 shadow-sm">Талбай: {company.booth}</p>
+                  <p className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold inline-block mt-3 border border-slate-200 shadow-sm">{d.formBooth}: {company.booth}</p>
                 </div>
               </div>
             ))}
@@ -800,32 +784,32 @@ export default function App() {
               <X className="w-5 h-5 text-white" />
             </button>
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl z-0 pointer-events-none"></div>
-            <h3 className="text-2xl font-bold mb-8 relative z-10 w-11/12">Талбай захиалах хүсэлт</h3>
+            <h3 className="text-2xl font-bold mb-8 relative z-10 w-11/12">{d.formBookingTitle}</h3>
             <form onSubmit={handleFormSubmit} className="space-y-6 relative z-10">
                <div className="space-y-2">
-                 <label className="text-sm font-medium text-slate-300">Компанийн нэр</label>
-                 <input required name="companyName" type="text" placeholder="Таны компани ХХК" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
+                 <label className="text-sm font-medium text-slate-300">{d.formCompanyName}</label>
+                 <input required name="companyName" type="text" placeholder={lang === 'mn' ? "Таны компани ХХК" : "Your Company LLC"} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
                </div>
                <div className="space-y-2">
-                 <label className="text-sm font-medium text-slate-300">Холбогдох хүний нэр</label>
-                 <input required name="contactName" type="text" placeholder="Бат, Болд..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
+                 <label className="text-sm font-medium text-slate-300">{d.formContactName}</label>
+                 <input required name="contactName" type="text" placeholder={lang === 'mn' ? "Бат, Болд..." : "John Doe..."} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
                </div>
                <div className="space-y-2">
-                 <label className="text-sm font-medium text-slate-300">Утасны дугаар</label>
+                 <label className="text-sm font-medium text-slate-300">{d.formPhone}</label>
                  <input required name="phone" type="tel" placeholder="9911..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all" />
                </div>
 
                <div className="space-y-2 pb-4">
                  <label className="text-sm font-medium text-slate-300 flex items-center justify-between">
-                   <span>Сонгосон талбай</span>
+                   <span>{d.formSelectedBooth}</span>
                  </label>
                  <div className="w-full rounded-xl px-4 py-4 font-bold text-lg flex items-center transition-colors border bg-emerald-500/10 border-emerald-500/30 text-emerald-400">
-                   Талбай: {selectedBooth}
+                   {d.formBooth}: {selectedBooth}
                  </div>
                </div>
 
                <button type="submit" disabled={isSubmitting} className="w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center transition-all bg-amber-400 hover:bg-amber-500 text-slate-900 focus:ring-4 focus:ring-amber-400/30 active:scale-[0.98] shadow-lg shadow-amber-400/20 disabled:opacity-50">
-                 {isSubmitting ? 'Илгээж байна...' : 'Талбай захиалах хүсэлт илгээх'}
+                 {isSubmitting ? d.formSubmitting : d.formSubmitBtn}
                </button>
             </form>
           </div>
@@ -841,7 +825,7 @@ export default function App() {
               <X className="w-5 h-5 text-white" />
             </button>
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl z-0 pointer-events-none"></div>
-            <h3 className="text-2xl font-bold mb-8 relative z-10 w-11/12">Үзэгчийн бүртгэл</h3>
+            <h3 className="text-2xl font-bold mb-8 relative z-10 w-11/12">{d.visitorTitle}</h3>
             <form onSubmit={async (e) => {
               e.preventDefault();
               setIsSubmitting(true);
@@ -857,7 +841,7 @@ export default function App() {
               const path = 'visitor_registrations';
               try {
                 await addDoc(collection(db, path), data);
-                alert('Таны үзэгчийн бүртгэлийг амжилттай хүлээж авлаа. Үзэсгэлэнд тавтай морилно уу!');
+                alert(d.visitorSuccess);
                 setIsVisitorModalOpen(false);
               } catch (error) {
                 handleFirestoreError(error, OperationType.CREATE, path);
@@ -867,25 +851,25 @@ export default function App() {
             }} className="space-y-6 relative z-10">
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                   <label className="text-sm font-medium text-slate-300">Овог</label>
-                   <input required name="lastName" type="text" placeholder="Овог" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+                   <label className="text-sm font-medium text-slate-300">{d.visitorLastName}</label>
+                   <input required name="lastName" type="text" placeholder={d.visitorLastName} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                  </div>
                  <div className="space-y-2">
-                   <label className="text-sm font-medium text-slate-300">Нэр</label>
-                   <input required name="firstName" type="text" placeholder="Нэр" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+                   <label className="text-sm font-medium text-slate-300">{d.visitorFirstName}</label>
+                   <input required name="firstName" type="text" placeholder={d.visitorFirstName} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                  </div>
                </div>
                <div className="space-y-2">
-                 <label className="text-sm font-medium text-slate-300">Утасны дугаар</label>
+                 <label className="text-sm font-medium text-slate-300">{d.formPhone}</label>
                  <input required name="phone" type="tel" placeholder="9911..." className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                </div>
                <div className="space-y-2 pb-4">
-                 <label className="text-sm font-medium text-slate-300">И-мэйл хаяг</label>
+                 <label className="text-sm font-medium text-slate-300">{d.visitorEmail}</label>
                  <input required name="email" type="email" placeholder="example@gmail.com" className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
                </div>
 
                <button type="submit" disabled={isSubmitting} className="w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center transition-all bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-4 focus:ring-emerald-500/30 active:scale-[0.98] shadow-lg shadow-emerald-500/20 disabled:opacity-50">
-                 {isSubmitting ? 'Бүртгэж байна...' : 'Бүртгүүлэх'}
+                 {isSubmitting ? d.visitorRegistering : d.visitorRegisterBtn}
                </button>
             </form>
           </div>
@@ -940,10 +924,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-space text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-4">
-              Арга хэмжээний хөтөлбөр
+              {d.agendaHeader}
             </h2>
             <p className="text-lg text-slate-600">
-              Гурван өдрийн турш үргэлжлэх сонирхолтой илтгэл, хэлэлцүүлгүүдийн цагийн хуваарь
+              {d.agendaSub}
             </p>
           </div>
 
@@ -978,12 +962,12 @@ export default function App() {
                     <Calendar size={24} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Өдрийн онцлох сэдэв</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{d.dayHighlight}</p>
                     <h3 className="text-xl font-bold text-slate-900">{AGENDA_DATA[activeAgendaDay].title}</h3>
                   </div>
                 </div>
                 <div className="px-6 py-2 bg-white/50 rounded-full text-slate-800 font-bold text-sm">
-                  {AGENDA_DATA[activeAgendaDay].items.length} арга хэмжээ
+                  {AGENDA_DATA[activeAgendaDay].items.length} {d.eventsCount}
                 </div>
               </div>
 
@@ -1050,7 +1034,7 @@ export default function App() {
                 <span className="text-slate-300 text-xs tracking-wider uppercase font-bold">{d.contactBadge}</span>
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Холбоо барих</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">{d.contactTitle}</h2>
               
               <div className="space-y-6 mb-12">
                 <a href="tel:99907816" className="flex items-center gap-5 text-slate-300 hover:text-emerald-400 transition-colors group">
@@ -1062,7 +1046,7 @@ export default function App() {
               </div>
 
               <div>
-                <h3 className="text-slate-500 uppercase tracking-widest text-xs font-bold mb-4">Биднийг дагах</h3>
+                <h3 className="text-slate-500 uppercase tracking-widest text-xs font-bold mb-4">{d.followUs}</h3>
                 <div className="flex items-center gap-4">
                   <a href="https://www.facebook.com/barilgamn" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-slate-800 transition-colors border border-slate-800 hover:border-blue-500/50 shadow-md">
                     <Facebook className="w-5 h-5" />
@@ -1085,7 +1069,7 @@ export default function App() {
               allowFullScreen={true} 
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade"
-              title="Үзэсгэлэн болох байршил"
+              title={d.venue}
             ></iframe>
           </div>
         </div>
@@ -1109,7 +1093,7 @@ export default function App() {
         <button 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed bottom-8 right-8 p-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all z-50 hover:-translate-y-1"
-          aria-label="Дээш гарах"
+          aria-label={d.scrollToTop}
         >
           <ArrowUp className="w-6 h-6" strokeWidth={2.5} />
         </button>
