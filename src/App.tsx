@@ -90,6 +90,36 @@ export default function App() {
     }
   ];
 
+  const displayAgenda = React.useMemo(() => {
+    if (schedules.length === 0) return AGENDA_DATA;
+
+    // Group Firestore schedules by date
+    const sorted = [...schedules].sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.time.localeCompare(b.time);
+    });
+
+    const dates = Array.from(new Set(sorted.map(s => s.date))).sort();
+    
+    return dates.map((dateStr, idx) => {
+      const items = sorted.filter(s => s.date === dateStr).map(s => ({
+        time: s.time,
+        title: s.title,
+        desc: s.description
+      }));
+      
+      return {
+        date: dateStr,
+        day: translations[lang].days[idx] || dateStr,
+        title: idx === 0 ? (lang === 'mn' ? "Нээлтийн өдөр" : "Opening Day") : 
+               idx === 1 ? (lang === 'mn' ? "Амины орон сууцны төлөвлөлт" : "Private Housing Planning") : 
+               (lang === 'mn' ? "Инженерийн шийдэл & Санхүүжилт" : "Engineering & Finance"),
+        color: idx === 0 ? "bg-amber-400" : idx === 1 ? "bg-rose-400" : "bg-cyan-400",
+        items
+      };
+    });
+  }, [schedules, lang, d.days]);
+
   const lastScrollY = useRef(0);
   const bookingRef = useRef<HTMLElement>(null);
   const companiesRef = useRef<HTMLDivElement>(null);
@@ -933,7 +963,7 @@ export default function App() {
 
           {/* Date Selector Tabs */}
           <div className="flex flex-wrap justify-center gap-4 mb-16">
-            {AGENDA_DATA.map((day, idx) => (
+            {displayAgenda.map((day, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveAgendaDay(idx)}
@@ -956,23 +986,23 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <div className={`p-6 rounded-[2.5rem] ${AGENDA_DATA[activeAgendaDay].color} bg-opacity-20 backdrop-blur-sm border-2 border-white mb-8 flex flex-col md:flex-row items-center justify-between gap-4`}>
+              <div className={`p-6 rounded-[2.5rem] ${displayAgenda[activeAgendaDay]?.color || 'bg-slate-400'} bg-opacity-20 backdrop-blur-sm border-2 border-white mb-8 flex flex-col md:flex-row items-center justify-between gap-4`}>
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 ${AGENDA_DATA[activeAgendaDay].color} rounded-full flex items-center justify-center text-white shadow-lg`}>
+                  <div className={`w-12 h-12 ${displayAgenda[activeAgendaDay]?.color || 'bg-slate-400'} rounded-full flex items-center justify-center text-white shadow-lg`}>
                     <Calendar size={24} />
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{d.dayHighlight}</p>
-                    <h3 className="text-xl font-bold text-slate-900">{AGENDA_DATA[activeAgendaDay].title}</h3>
+                    <h3 className="text-xl font-bold text-slate-900">{displayAgenda[activeAgendaDay]?.title}</h3>
                   </div>
                 </div>
                 <div className="px-6 py-2 bg-white/50 rounded-full text-slate-800 font-bold text-sm">
-                  {AGENDA_DATA[activeAgendaDay].items.length} {d.eventsCount}
+                  {displayAgenda[activeAgendaDay]?.items.length || 0} {d.eventsCount}
                 </div>
               </div>
 
               <div className="space-y-4">
-                {AGENDA_DATA[activeAgendaDay].items.map((item, idx) => (
+                {(displayAgenda[activeAgendaDay]?.items || []).map((item, idx) => (
                   <motion.div 
                     key={idx}
                     initial={{ opacity: 0, x: -20 }}
