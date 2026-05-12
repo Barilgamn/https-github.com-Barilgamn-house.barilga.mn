@@ -83,6 +83,68 @@ export default function AdminDashboard() {
   const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [activeTab, setActiveTab] = useState<'booths' | 'exhibitors' | 'visitors' | 'admins' | 'schedules' | 'analytics'>('booths');
+  
+  const hardcodedExhibitors = useMemo(() => [
+    { name: "Захиалагдсан", activity: "Барилгын материал", booth: "A1" },
+    { name: "БАРИЛГАЧИН ГРУПП", activity: "барилгын материал", booth: "A2" },
+    { name: "МАНАДА ХХК", activity: "Барилгын материал", booth: "A3" },
+    { name: "МАЙМОНСООРС ХХК", activity: "Барилга угсралт", booth: "A4" },
+    { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Инженерчлэл", booth: "A5, A6, A7, A8" },
+    { name: "Урта Камел Транс ХХК", activity: "Тээвэр зууч", booth: "A13, A14" },
+    { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
+    { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
+    { name: "НАРТЫН ГОЛОМТ ХХК", activity: "Барилга угсралт", booth: "A17, A18" },
+    { name: "СОЛАР ПОВЕР АЙРИС ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A19" },
+    { name: "ЦЕНТРАЛ РИЧ МОНГОЛИА ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A20" },
+    { name: "БАРИЛГА МН СЭТГҮҮЛ", activity: "Хэвлэл мэдээлэл", booth: "A23" },
+    { name: "АМИНЫ ОРОН СУУЦ КАТАЛОГИ", activity: "Хэвлэл мэдээлэл", booth: "A24" },
+    { name: "СЭРЖАГ ХИЙЦ ХХК", activity: "Барилга угсралт", booth: "A25, A26" },
+    { name: "ХАДХАН ВИШН ХХК", activity: "Барилга угсралт", booth: "A27" },
+    { name: "ТЕРМИГАС ИМПИАНТИ ТЕХНОЛОГИ ХХК", activity: "Инженерчлэл", booth: "A28" },
+    { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
+    { name: "нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
+    { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "АОС төсөл", booth: "A31, A32, A71, A72" },
+    { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц", booth: "A33" },
+    { name: "ТИ ЭНД ЖИ ХХК", activity: "Барилга угсралт", booth: "A34" },
+    { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
+    { name: "БАРИЛГАЧИН ГРУПП ХХК", activity: "Барилга угсралт", booth: "A36" },
+    { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37, A38" },
+    { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", booth: "A41, A42" },
+    { name: "БЭЛЭГ АРВИЖИХ ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A43, A44" },
+    { name: "КАСТЛ ХАУС ХХК", activity: "Барилга угсралт", booth: "A45" },
+    { name: "HAUS", activity: "Барилга угсралт", booth: "A46" },
+    { name: "ЦОНХ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A47, A48" },
+    { name: "ЭМ-ЖИ-АЙ ЭМ” ХХК", activity: "Барилга угсралт", booth: "A53, A54" },
+    { name: "ГОРГАЗ ХХК", activity: "Инженерчлэл", booth: "A55, A56" },
+    { name: "НЭГҮҮН ИНЖЕНЕРИНГ ХХК", activity: "Инженерчлэл", booth: "A57, A58" },
+    { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59, A60" },
+    { name: "ЭС ЭН ДИ ХХК", activity: "Барилгын материал", booth: "A73, A74" },
+    { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Барилгын материал", booth: "A75" },
+    { name: "ЭН И ЭМ ХХК", activity: "Барилгын материал", booth: "A76" },
+    { name: "ТЭНГЭР УУЛ ТРЕЙД ХХК", activity: "Барилга угсралт", booth: "A77" },
+    { name: "ЭКО КАБЕЛЬ МОНГОЛИА ХХК", activity: "Барилгын материал", booth: "A78" },
+    { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "Z1" },
+    { name: "\"Өөрийн Байшин Үндэсний Хөтөлбөр\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "Z2" },
+    { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "Z3" }
+  ], []);
+
+  const allExhibitors = useMemo(() => {
+    const combined = [...hardcodedExhibitors].map(h => ({ ...h, id: `hardcoded_${h.booth.replace(/\s/g, '')}`, createdAt: new Date() }));
+    exhibitors.forEach(exh => {
+      const idx = combined.findIndex(c => c.booth === exh.booth);
+      if (idx >= 0) {
+        combined[idx] = { ...combined[idx], ...exh };
+      } else {
+        combined.push(exh as any);
+      }
+    });
+    return combined.sort((a, b) => {
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [exhibitors, hardcodedExhibitors]);
+
   const [newExhibitor, setNewExhibitor] = useState({ 
     name: '', 
     activity: '', 
@@ -609,7 +671,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Оролцогч байгууллага</p>
-                  <p className="text-3xl font-bold text-slate-900">{exhibitors.length}</p>
+                  <p className="text-3xl font-bold text-slate-900">{allExhibitors.length}</p>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
@@ -828,34 +890,46 @@ export default function AdminDashboard() {
                           onClick={async () => {
                             if (!window.confirm("30 гаруй байгууллагын өгөгдлийг нэмэх үү? (Давхардаж магадгүйг анхаарна уу)")) return;
                             const defaults = [
-                              { name: "Урта Камел Транс ХХК", activity: "Тээвэр зууч", booth: "A13" },
+                              { name: "Захиалагдсан", activity: "Барилгын материал", booth: "A1" },
+                              { name: "БАРИЛГАЧИН ГРУПП", activity: "барилгын материал", booth: "A2" },
+                              { name: "МАНАДА ХХК", activity: "Барилгын материал", booth: "A3" },
+                              { name: "МАЙМОНСООРС ХХК", activity: "Барилга угсралт", booth: "A4" },
+                              { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Инженерчлэл", booth: "A5, A6, A7, A8" },
+                              { name: "Урта Камел Транс ХХК", activity: "Тээвэр зууч", booth: "A13, A14" },
                               { name: "Mecc solar Mongolia", activity: "Сэргээгдэх эрчим хүч", booth: "A15" },
                               { name: "Монкабель системс ХХК", activity: "Цахилгаан, холбооны кабель", booth: "A16" },
-                              { name: "Нартын Голомт ХХК", activity: "Барилга угсралт", booth: "A17" },
-                              { name: "Централ Рич Монголиа ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A20" },
-                              { name: "Тэнгэр уул трэйд ХХК", activity: "Барилга угсралт", booth: "A24" },
+                              { name: "НАРТЫН ГОЛОМТ ХХК", activity: "Барилга угсралт", booth: "A17, A18" },
+                              { name: "СОЛАР ПОВЕР АЙРИС ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A19" },
+                              { name: "ЦЕНТРАЛ РИЧ МОНГОЛИА ХХК", activity: "Сэргээгдэх эрчим хүч", booth: "A20" },
+                              { name: "БАРИЛГА МН СЭТГҮҮЛ", activity: "Хэвлэл мэдээлэл", booth: "A23" },
+                              { name: "АМИНЫ ОРОН СУУЦ КАТАЛОГИ", activity: "Хэвлэл мэдээлэл", booth: "A24" },
+                              { name: "СЭРЖАГ ХИЙЦ ХХК", activity: "Барилга угсралт", booth: "A25, A26" },
                               { name: "ХАДХАН ВИШН ХХК", activity: "Барилга угсралт", booth: "A27" },
-                              { name: "ТЕРМИГАС ИМПИАНТИ ТЕХНОЛОГИ ХХК", activity: "Инженерийн шийдэл", booth: "A28" },
-                              { name: "Нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A29" },
-                              { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A30" },
-                              { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "АОС төсөл", booth: "A31" },
+                              { name: "ТЕРМИГАС ИМПИАНТИ ТЕХНОЛОГИ ХХК", activity: "Инженерчлэл", booth: "A28" },
+                              { name: "Хот байгуулалт, хотын стандартын газар", activity: "Төрийн байгууллага", booth: "A29" },
+                              { name: "нийслэлийн агаар, орчны бохирдолтой тэмцэх газар", activity: "Төрийн байгууллага", booth: "A30" },
+                              { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "АОС төсөл", booth: "A31, A32, A71, A72" },
                               { name: "ГЭРЭЛТ ӨРГӨӨ ХАУС ХХК", activity: "Амины орон сууц", booth: "A33" },
-                              { name: "ЭЙ АР ТИ ЮУ ХХК", activity: "Архитектур, интерьер", booth: "A34" },
+                              { name: "ТИ ЭНД ЖИ ХХК", activity: "Барилга угсралт", booth: "A34" },
                               { name: "БУЯНТ СУТАЙН ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A35" },
-                              { name: "АГЛУТ ХХК", activity: "Инженер, төсөл", booth: "A36" },
-                              { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37" },
-                              { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", booth: "A41" },
-                              { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59" },
-                              { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A60" },
-                              { name: "МАЙМОНСООРС ХХК", activity: "Барилга угсралт", booth: "A67" },
-                              { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A69" },
-                              { name: "КЛАЙМАКС ИНТЕРНЭЙШНЛ ХХК", activity: "Барилгын Материал", booth: "A71" },
-                              { name: "ЭС ЭН ДИ ХХК", activity: "Барилгын Материал", booth: "A73" },
+                              { name: "БАРИЛГАЧИН ГРУПП ХХК", activity: "Барилга угсралт", booth: "A36" },
+                              { name: "ХАНГАЛ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A37, A38" },
+                              { name: "ЭНЕРЖИ КОНСТРАКШН ТРЕЙД", activity: "Эрчим хүч, барилга угсралт", booth: "A41, A42" },
+                              { name: "БЭЛЭГ АРВИЖИХ ХИШИГ ХХК", activity: "Барилга угсралт", booth: "A43, A44" },
+                              { name: "КАСТЛ ХАУС ХХК", activity: "Барилга угсралт", booth: "A45" },
+                              { name: "HAUS", activity: "Барилга угсралт", booth: "A46" },
+                              { name: "ЦОНХ КОНСТРАКШН ХХК", activity: "Барилга угсралт", booth: "A47, A48" },
+                              { name: "ЭМ-ЖИ-АЙ ЭМ” ХХК", activity: "Барилга угсралт", booth: "A53, A54" },
+                              { name: "ГОРГАЗ ХХК", activity: "Инженерчлэл", booth: "A55, A56" },
+                              { name: "НЭГҮҮН ИНЖЕНЕРИНГ ХХК", activity: "Инженерчлэл", booth: "A57, A58" },
+                              { name: "ЭС ТИ КРЕАТИВ ХХК", activity: "Интерьер дизайн", booth: "A59, A60" },
+                              { name: "ЭС ЭН ДИ ХХК", activity: "Барилгын материал", booth: "A73, A74" },
                               { name: "БОЛД ЧИН ГЭГЭЭ ХХК", activity: "Барилгын материал", booth: "A75" },
-                              { name: "ЕВРОЗИГИ ИНЖЕНЕРИНГ ХХК", activity: "Барилгын материал", booth: "A81" },
-                              { name: "Манада ХХК", activity: "Барилгын материал", booth: "A83" },
+                              { name: "ЭН И ЭМ ХХК", activity: "Барилгын материал", booth: "A76" },
+                              { name: "ТЭНГЭР УУЛ ТРЕЙД ХХК", activity: "Барилга угсралт", booth: "A77" },
+                              { name: "ЭКО КАБЕЛЬ МОНГОЛИА ХХК", activity: "Барилгын материал", booth: "A78" },
                               { name: "ЭН СИ ДИ ПРЕКОН ХХК", activity: "Угсармал барилга", booth: "Z1" },
-                              { name: "Өөрийн Байшин Үндэсний Хөтөлбөр ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "Z2" },
+                              { name: "\"Өөрийн Байшин Үндэсний Хөтөлбөр\" ГҮТББ", activity: "Зөвлөх үйлчилгээ", booth: "Z2" },
                               { name: "ТӨГС ХУРЦ СИСТЕМС ХХК", activity: "Инженерийн шугам сүлжээ", booth: "Z3" }
                             ];
                             
@@ -1104,10 +1178,10 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {exhibitors.length === 0 ? (
+                        {allExhibitors.length === 0 ? (
                           <tr><td colSpan={6} className="p-8 text-center text-slate-400">Мэдээлэл олдсонгүй</td></tr>
                         ) : (
-                          exhibitors.map((exhibitor) => (
+                          allExhibitors.map((exhibitor) => (
                             <tr key={exhibitor.id} className="hover:bg-slate-50/50 transition-all group">
                               <td className="p-4 text-xs text-slate-400 whitespace-nowrap">{formatDate(exhibitor.createdAt).split(',')[0]}</td>
                               <td className="p-4">
