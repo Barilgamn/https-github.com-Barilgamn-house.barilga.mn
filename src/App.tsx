@@ -194,7 +194,7 @@ export default function App() {
 
 
   // Countdown State
-  const targetDate = new Date('2026-05-15T00:00:00').getTime();
+  const targetDate = new Date('2026-05-15T09:00:00').getTime();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
