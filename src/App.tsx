@@ -581,10 +581,15 @@ export default function App() {
               <span>2026.05.15 &ndash; 05.17</span>
             </div>
             <div className="hidden sm:block w-2 h-2 rounded-full bg-amber-400/50" />
-            <div className="flex items-center gap-2.5">
-              <MapPin className="w-5 h-5 text-emerald-400" />
+            <a 
+              href="https://maps.app.goo.gl/UV2JYVsr7sMxCSwW8" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="flex items-center gap-2.5 hover:text-emerald-400 transition-colors group"
+            >
+              <MapPin className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
               <span>{d.venue}</span>
-            </div>
+            </a>
           </div>
 
           <button onClick={scrollToBooking} className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-8 py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-lg shadow-amber-400/20 active:scale-95 flex items-center justify-center">
@@ -783,6 +788,7 @@ export default function App() {
 
           {/* Booking Form */}
         </div>
+      </section>
 
         {/* Participating Companies Section */}
         <div id="companies" ref={companiesRef} className="w-full mt-24 scroll-mt-24">
@@ -803,9 +809,8 @@ export default function App() {
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Booking Form Modal */}
+        {/* Booking Form Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 opacity-100 transition-opacity">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
